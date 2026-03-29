@@ -2168,7 +2168,7 @@ table tbody tr:hover {
       display: flex;
       position: fixed;
       top: 15px;
-      right: 20px; /* Put it on the top right */
+      left: 20px; /* Put it on the top right */
       background: var(--bg2);
       color: var(--text);
       border: 1px solid var(--border2);
