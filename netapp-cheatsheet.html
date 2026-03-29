@@ -3,68 +3,31 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NetApp ONTAP Cheat Sheet | Quick Reference | NetApp Hub</title>
+
+  <title>NetApp ONTAP Cheat Sheet | CLI Commands Quick Reference | NetApp Hub</title>
+  <link rel="canonical" href="https://vadiraj.dev/cheatsheet.html">
+  <meta name="description" content="NetApp ONTAP cheat sheet with common CLI commands for storage engineers, including volume, aggregate, SVM, network, snapshot, and troubleshooting commands.">
+  <meta name="keywords" content="NetApp ONTAP cheat sheet, NetApp commands, ONTAP CLI, storage commands, NetApp automation">
+  <meta name="author" content="Vadiraj">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:title" content="NetApp ONTAP Cheat Sheet | NetApp Hub">
+  <meta property="og:description" content="Quick reference for common NetApp ONTAP CLI commands.">
+  <meta property="og:url" content="https://vadiraj.dev/cheatsheet.html">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="NetApp ONTAP Cheat Sheet | NetApp Hub">
+  <meta name="twitter:description" content="Quick reference for common NetApp ONTAP CLI commands.">
+
+  <link rel="icon" href="/favicon.ico">
   <link rel="stylesheet" href="assets/css/style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-   
-  <link rel="canonical" href="https://vadiraj.dev/cheatsheet.html">
-  <meta name="description" content="Quick reference cheat sheet for NetApp ONTAP CLI commands. Categorized for fast lookup.">
-  
-  <style>
-    /* Cheat Sheet Specific Styles */
-    .cheat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-      margin-top: 30px;
-    }
-    .cheat-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 20px;
-      transition: transform 0.2s;
-    }
-    .cheat-card:hover {
-      border-color: var(--accent-cmd);
-      transform: translateY(-2px);
-    }
-    .cheat-card h3 {
-      font-family: 'Syne', sans-serif;
-      color: var(--accent-cmd);
-      margin-bottom: 15px;
-      border-bottom: 1px solid rgba(245, 166, 35, 0.2);
-      padding-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .cmd-item {
-      margin-bottom: 12px;
-    }
-    .cmd-code {
-      display: block;
-      font-family: 'JetBrains Mono', monospace;
-      background: rgba(0,0,0,0.3);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.85em;
-      color: #eee;
-      margin-bottom: 4px;
-    }
-    .cmd-desc {
-      font-size: 0.8em;
-      color: #888;
-    }
-    @media print {
-      .sidebar, .sidebar-toggle, .header-badge { display: none; }
-      .main-content { margin-left: 0; padding: 0; }
-      .cheat-grid { grid-template-columns: 1fr 1fr; }
-    }
-  </style>
+
 </head>
 <body>
   <div class="noise"></div>
-    
+
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
@@ -72,66 +35,257 @@
         <span class="logo-text">NetApp<br><span class="logo-sub">Hub</span></span>
       </a>
     </div>
+
     <ul class="nav-links">
-        <li class="nav-section-label">Navigation</li>
-        <li><a href="index.html"><span class="nav-icon">⌂</span> Home</a></li>
-        <li><a href="get-started.html" class="nav-icon"><span class="nav-icon">🚀</span> Get Started</a></li>
-        <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
-        <li><a href="tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
-        <li><a href="python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
-        <li><a href="powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
-        <li><a href="blog-community.html" class="nav-icon"><span class="nav-icon">📝</span> Blogs and Articles</a></li>
-        <li><a href="about-me.html"><span class="nav-icon">👤</span> About Me</a></li>
-      </ul>
-      <div class="sidebar-footer"><span>Built for NetApp Engineers</span></div>
+      <li class="nav-section-label">Navigation</li>
+      <li><a href="index.html"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="get-started.html"><span class="nav-icon">🚀</span> Get Started</a></li>
+      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
+      <li><a href="cheatsheet.html" class="active"><span class="nav-icon">📋</span> Cheat Sheet</a></li>
+      <li><a href="tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
+      <li><a href="python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
+      <li><a href="powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
+      <li><a href="blog-community.html"><span class="nav-icon">📝</span> Blogs and Articles</a></li>
+      <li><a href="about-me.html"><span class="nav-icon">👤</span> About Me</a></li>
+    </ul>
+
+    <div class="sidebar-footer"><span>Built for NetApp Engineers</span></div>
   </nav>
+
   <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
 
   <main class="main-content">
     <header class="page-header">
       <div class="header-badge">QUICK REF</div>
-      <h1 class="page-title">ONTAP Cheat Sheet</h1>
-      <p class="page-subtitle">Essential commands for daily storage administration.</p>
+      <h1 class="page-title">NetApp ONTAP Cheat Sheet</h1>
+      <p class="page-subtitle">Common CLI commands for daily storage administration, troubleshooting, and automation workflows.</p>
     </header>
 
-    <div class="cheat-grid" id="cheatSheetContent">
+    <p class="cheat-intro">
+      This NetApp ONTAP cheat sheet gives storage engineers a quick reference for frequently used CLI commands across cluster management, volumes, aggregates, SVMs, networking, snapshots, export policies, health checks, and performance troubleshooting. Use the search and filter controls below to quickly find the command you need.
+    </p>
+
+    <div class="cheat-links">
+      <a href="commands.html">Full Commands Reference</a>
+      <a href="python.html">Python Automation</a>
+      <a href="powershell.html">PowerShell Automation</a>
+      <a href="tips.html">Tips & Best Practices</a>
+    </div>
+
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num">01</span> Common NetApp ONTAP Commands</h2>
+
+      <div class="cheat-toolbar">
+        <input
+          id="commandSearch"
+          class="cheat-search"
+          type="text"
+          placeholder="Search commands, category, or description..."
+        />
+
+        <select id="categoryFilter" class="cheat-filter">
+          <option value="all">All Categories</option>
+        </select>
+
+        <div class="result-count" id="resultCount">0 commands</div>
       </div>
-      <div id="footer-container"></div>
+
+      <div class="cheat-grid" id="cheatSheetContent"></div>
+      <div class="no-results" id="noResults">No commands found for the current search or filter.</div>
+    </section>
+
+    <div id="footer-container"></div>
   </main>
 
   <script src="assets/js/utils.js"></script>
   <script src="assets/js/search.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      // Assuming loadCommandsData() fetches your JSON/Array into a global variable
-      const data = await loadCommandsData(); 
-      renderCheatSheet(data);
-    });
 
-    function renderCheatSheet(commands) {
-      const container = document.getElementById('cheatSheetContent');
-      // Group commands by category
-      const groups = commands.reduce((acc, cmd) => {
-        acc[cmd.category] = acc[cmd.category] || [];
-        acc[cmd.category].push(cmd);
+  <script>
+    const commandData = [
+      { category: "Cluster", command: "cluster show", description: "Show cluster information." },
+      { category: "Cluster", command: "cluster identity show", description: "Display cluster identity details." },
+      { category: "Cluster", command: "version", description: "Show current ONTAP version." },
+      { category: "Cluster", command: "system node show", description: "List nodes in the cluster." },
+      { category: "Cluster", command: "system node run -node <node>", description: "Run node shell commands on a specific node." },
+
+      { category: "Volume", command: "volume show", description: "Display all volumes." },
+      { category: "Volume", command: "volume show-space", description: "Show space usage for volumes." },
+      { category: "Volume", command: "volume create -vserver <svm> -volume <name> -aggregate <aggr> -size <size>", description: "Create a new volume." },
+      { category: "Volume", command: "volume delete -vserver <svm> -volume <name>", description: "Delete a volume." },
+      { category: "Volume", command: "volume offline -vserver <svm> -volume <name>", description: "Take a volume offline." },
+      { category: "Volume", command: "volume online -vserver <svm> -volume <name>", description: "Bring a volume online." },
+      { category: "Volume", command: "volume modify -vserver <svm> -volume <name>", description: "Modify volume configuration." },
+      { category: "Volume", command: "volume size -vserver <svm> -volume <name> -new-size <size>", description: "Resize a volume." },
+      { category: "Volume", command: "volume efficiency show", description: "Show volume efficiency status." },
+      { category: "Volume", command: "volume efficiency start -vserver <svm> -volume <name>", description: "Start efficiency operation." },
+
+      { category: "Aggregate", command: "storage aggregate show", description: "Show all aggregates." },
+      { category: "Aggregate", command: "storage aggregate show-status", description: "Display aggregate status." },
+      { category: "Aggregate", command: "storage aggregate create", description: "Create an aggregate." },
+      { category: "Aggregate", command: "storage aggregate add-disks", description: "Add disks to an aggregate." },
+      { category: "Aggregate", command: "storage aggregate online", description: "Bring an aggregate online." },
+      { category: "Aggregate", command: "storage aggregate offline", description: "Take an aggregate offline." },
+
+      { category: "SVM", command: "vserver show", description: "List all SVMs." },
+      { category: "SVM", command: "vserver create", description: "Create a new SVM." },
+      { category: "SVM", command: "vserver modify", description: "Modify SVM settings." },
+      { category: "SVM", command: "vserver delete", description: "Delete an SVM." },
+
+      { category: "Network", command: "network interface show", description: "Show all LIFs." },
+      { category: "Network", command: "network interface create", description: "Create a new LIF." },
+      { category: "Network", command: "network interface modify", description: "Modify a LIF." },
+      { category: "Network", command: "network interface migrate", description: "Migrate a LIF to another port." },
+      { category: "Network", command: "network interface revert", description: "Revert a LIF to its home port." },
+      { category: "Network", command: "network port show", description: "Show network ports." },
+      { category: "Network", command: "network port ifgrp show", description: "Show interface groups." },
+      { category: "Network", command: "network route show", description: "Display configured routes." },
+
+      { category: "Snapshot", command: "snapshot show", description: "List snapshots." },
+      { category: "Snapshot", command: "snapshot create -vserver <svm> -volume <name> -snapshot <snap>", description: "Create a snapshot." },
+      { category: "Snapshot", command: "snapshot delete -vserver <svm> -volume <name> -snapshot <snap>", description: "Delete a snapshot." },
+      { category: "Snapshot", command: "snapshot restore", description: "Restore from a snapshot." },
+      { category: "Snapshot", command: "volume snapshot policy show", description: "Show snapshot policies." },
+
+      { category: "Export Policy", command: "vserver export-policy show", description: "Show export policies." },
+      { category: "Export Policy", command: "vserver export-policy create", description: "Create an export policy." },
+      { category: "Export Policy", command: "vserver export-policy rule show", description: "Show export policy rules." },
+      { category: "Export Policy", command: "vserver export-policy rule create", description: "Create an export policy rule." },
+
+      { category: "Protocols", command: "vserver cifs show", description: "Show CIFS server configuration." },
+      { category: "Protocols", command: "vserver cifs create", description: "Create a CIFS server." },
+      { category: "Protocols", command: "vserver nfs show", description: "Show NFS configuration." },
+      { category: "Protocols", command: "vserver nfs modify", description: "Modify NFS configuration." },
+      { category: "Protocols", command: "lun show", description: "Display LUN information." },
+      { category: "Protocols", command: "igroup show", description: "Show initiator groups." },
+
+      { category: "Disk", command: "storage disk show", description: "Show disk inventory." },
+      { category: "Disk", command: "storage disk assign", description: "Assign a disk to a node." },
+      { category: "Disk", command: "storage disk zero spares", description: "Zero spare disks." },
+
+      { category: "Health", command: "system health status show", description: "Show system health status." },
+      { category: "Health", command: "system health alert show", description: "List active health alerts." },
+      { category: "Health", command: "event log show", description: "Display event log entries." },
+      { category: "Health", command: "cluster ring show", description: "Check cluster ring health." },
+
+      { category: "Performance", command: "statistics show", description: "Show performance counters." },
+      { category: "Performance", command: "statistics start", description: "Start statistics collection." },
+      { category: "Performance", command: "statistics stop", description: "Stop statistics collection." },
+      { category: "Performance", command: "qos statistics volume latency show", description: "View volume latency statistics." },
+
+      { category: "Security", command: "security login show", description: "Show configured login accounts." },
+      { category: "Security", command: "security certificate show", description: "Show installed certificates." },
+      { category: "Security", command: "security audit log show", description: "Display audit logs." }
+    ];
+
+    const contentEl = document.getElementById('cheatSheetContent');
+    const searchEl = document.getElementById('commandSearch');
+    const filterEl = document.getElementById('categoryFilter');
+    const countEl = document.getElementById('resultCount');
+    const noResultsEl = document.getElementById('noResults');
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function highlightText(text, query) {
+      if (!query) return escapeHtml(text);
+      const escaped = escapeHtml(text);
+      const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return escaped.replace(new RegExp(`(${safeQuery})`, 'ig'), '<mark>$1</mark>');
+    }
+
+    function populateCategories() {
+      const categories = [...new Set(commandData.map(item => item.category))].sort();
+      categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        filterEl.appendChild(option);
+      });
+    }
+
+    function filteredCommands() {
+      const query = searchEl.value.trim().toLowerCase();
+      const category = filterEl.value;
+
+      return commandData.filter(item => {
+        const matchesCategory = category === 'all' || item.category === category;
+        const haystack = `${item.category} ${item.command} ${item.description}`.toLowerCase();
+        const matchesQuery = !query || haystack.includes(query);
+        return matchesCategory && matchesQuery;
+      });
+    }
+
+    function renderCheatSheet() {
+      const query = searchEl.value.trim();
+      const filtered = filteredCommands();
+
+      countEl.textContent = `${filtered.length} command${filtered.length === 1 ? '' : 's'}`;
+
+      contentEl.innerHTML = '';
+      noResultsEl.style.display = filtered.length ? 'none' : 'block';
+
+      const grouped = filtered.reduce((acc, item) => {
+        if (!acc[item.category]) acc[item.category] = [];
+        acc[item.category].push(item);
         return acc;
       }, {});
 
-      for (const category in groups) {
+      Object.keys(grouped).sort().forEach(category => {
         const card = document.createElement('div');
         card.className = 'cheat-card';
-        card.innerHTML = `
-          <h3>${category.toUpperCase()}</h3>
-          ${groups[category].map(c => `
-            <div class="cmd-item">
-              <span class="cmd-code">${c.command}</span>
-              <span class="cmd-desc">${c.description}</span>
+
+        const commandsHtml = grouped[category].map(item => `
+          <div class="cmd-item">
+            <div class="cmd-row">
+              <code class="cmd-code">${highlightText(item.command, query)}</code>
+              <button class="copy-command-btn" data-command="${encodeURIComponent(item.command)}" title="Copy command">Copy</button>
             </div>
-          `).join('')}
+            <span class="cmd-desc">${highlightText(item.description, query)}</span>
+          </div>
+        `).join('');
+
+        card.innerHTML = `
+          <h3>
+            <span>${category}</span>
+            <span class="card-count">${grouped[category].length}</span>
+          </h3>
+          ${commandsHtml}
         `;
-        container.appendChild(card);
-      }
+
+        contentEl.appendChild(card);
+      });
+
+      bindCopyButtons();
     }
+
+    function bindCopyButtons() {
+      document.querySelectorAll('.copy-command-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const command = decodeURIComponent(btn.dataset.command);
+          try {
+            await navigator.clipboard.writeText(command);
+            const oldText = btn.textContent;
+            btn.textContent = 'Copied';
+            setTimeout(() => btn.textContent = oldText, 1200);
+          } catch {
+            btn.textContent = 'Failed';
+            setTimeout(() => btn.textContent = 'Copy', 1200);
+          }
+        });
+      });
+    }
+
+    searchEl.addEventListener('input', renderCheatSheet);
+    filterEl.addEventListener('change', renderCheatSheet);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      populateCategories();
+      renderCheatSheet();
+    });
   </script>
 </body>
 </html>
