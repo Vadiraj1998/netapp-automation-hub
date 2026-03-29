@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Commands Reference · NetApp Hub</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">NetApp<br><span class="logo-sub">Automation Hub</span></span>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
+      <span class="search-icon">⌕</span>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+    <ul class="nav-links">
+      <li class="nav-section-label">Navigation</li>
+      <li><a href="index.html"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
+      <li><a href="powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
+      <li><a href="commands.html" class="active"><span class="nav-icon">⌨</span> Commands Reference</a></li>
+      <li><a href="tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
+    </ul>
+    <div class="sidebar-footer"><span>Built for NetApp Engineers</span></div>
+  </nav>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div class="header-badge" style="color:var(--accent-cmd);background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.25)">ONTAP CLI</div>
+      <h1 class="page-title">Commands Reference</h1>
+      <p class="page-subtitle">ONTAP CLI commands organized by category. Use the filter to find commands by keyword or type.</p>
+    </header>
+
+    <section class="content-section">
+      <div class="cmd-table-wrapper">
+        <div class="cmd-filter-bar">
+          <input type="text" id="cmdFilter" placeholder="Filter commands..." oninput="filterTable(this.value, activeCategory)"/>
+          <button class="filter-btn active" onclick="setCategory(null, this)">All</button>
+          <button class="filter-btn" onclick="setCategory('vol', this)">Volume</button>
+          <button class="filter-btn" onclick="setCategory('snap', this)">Snapshot</button>
+          <button class="filter-btn" onclick="setCategory('net', this)">Network</button>
+          <button class="filter-btn" onclick="setCategory('svm', this)">SVM</button>
+          <button class="filter-btn" onclick="setCategory('diag', this)">Diagnostics</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+              <th>Example / Notes</th>
+              <th>Category</th>
+            </tr>
+          </thead>
+          <tbody id="cmdTableBody">
+            <!-- Volume -->
+            <tr data-cat="vol">
+              <td>volume show</td>
+              <td>Display volumes with state, size, and usage</td>
+              <td>volume show -fields name,size,state,space-used</td>
+              <td><span class="tag tag-vol">Volume</span></td>
+            </tr>
+            <tr data-cat="vol">
+              <td>volume create</td>
+              <td>Create a new FlexVol in an aggregate and SVM</td>
+              <td>volume create -vserver svm0 -volume vol1 -aggregate aggr1 -size 10g -junction-path /vol1</td>
+              <td><span class="tag tag-vol">Volume</span></td>
+            </tr>
+            <tr data-cat="vol">
+              <td>volume modify</td>
+              <td>Change volume properties such as size, autosize, or tiering</td>
+              <td>volume modify -vserver svm0 -volume vol1 -size 20g</td>
+              <td><span class="tag tag-vol">Volume</span></td>
+            </tr>
+            <tr data-cat="vol">
+              <td>volume delete</td>
+              <td>Delete a volume (must be offline first)</td>
+              <td>volume offline -vserver svm0 -volume vol1; volume delete -vserver svm0 -volume vol1</td>
+              <td><span class="tag tag-vol">Volume</span></td>
+            </tr>
+            <tr data-cat="vol">
+              <td>volume move start</td>
+              <td>Move a volume to another aggregate non-disruptively</td>
+              <td>volume move start -vserver svm0 -volume vol1 -destination-aggregate aggr2</td>
+              <td><span class="tag tag-vol">Volume</span></td>
+            </tr>
+            <tr data-cat="vol">
+              <td>volume efficiency on</td>
+              <td>Enable deduplication and compression on a volume</td>
+              <td>volume efficiency on -vserver svm0 -volume vol1</td>
+              <td><span class="tag tag-vol">Volume</span></td>
+            </tr>
+            <tr data-cat="vol">
+              <td>volume quota show</td>
+              <td>Display disk and file quota limits</td>
+              <td>volume quota show -vserver svm0 -volume vol1</td>
+              <td><span class="tag tag-vol">Volume</span></td>
+            </tr>
+            <!-- Snapshot -->
+            <tr data-cat="snap">
+              <td>volume snapshot create</td>
+              <td>Create a point-in-time snapshot of a volume</td>
+              <td>volume snapshot create -vserver svm0 -volume vol1 -snapshot snap1</td>
+              <td><span class="tag tag-snap">Snapshot</span></td>
+            </tr>
+            <tr data-cat="snap">
+              <td>volume snapshot show</td>
+              <td>List snapshots for a volume with size and creation time</td>
+              <td>volume snapshot show -vserver svm0 -volume vol1</td>
+              <td><span class="tag tag-snap">Snapshot</span></td>
+            </tr>
+            <tr data-cat="snap">
+              <td>volume snapshot delete</td>
+              <td>Delete one or more snapshots</td>
+              <td>volume snapshot delete -vserver svm0 -volume vol1 -snapshot snap1</td>
+              <td><span class="tag tag-snap">Snapshot</span></td>
+            </tr>
+            <tr data-cat="snap">
+              <td>volume snapshot restore</td>
+              <td>Restore a volume to a snapshot state (disruptive)</td>
+              <td>volume snapshot restore -vserver svm0 -volume vol1 -snapshot snap1</td>
+              <td><span class="tag tag-snap">Snapshot</span></td>
+            </tr>
+            <tr data-cat="snap">
+              <td>volume snapshot restore-file</td>
+              <td>Restore a single file from a snapshot without full restore</td>
+              <td>volume snapshot restore-file -vserver svm0 -volume vol1 -snapshot snap1 -path /dir/file.txt</td>
+              <td><span class="tag tag-snap">Snapshot</span></td>
+            </tr>
+            <tr data-cat="snap">
+              <td>snapmirror show</td>
+              <td>Display SnapMirror relationships, state, and lag</td>
+              <td>snapmirror show -fields source-path,destination-path,lag-time</td>
+              <td><span class="tag tag-snap">Snapshot</span></td>
+            </tr>
+            <tr data-cat="snap">
+              <td>snapmirror update</td>
+              <td>Trigger a manual SnapMirror update (on-demand sync)</td>
+              <td>snapmirror update -source-path svm0:vol1 -destination-path svm1:vol1_dr</td>
+              <td><span class="tag tag-snap">Snapshot</span></td>
+            </tr>
+            <tr data-cat="snap">
+              <td>snapmirror initialize</td>
+              <td>Initialize a new SnapMirror relationship (baseline transfer)</td>
+              <td>snapmirror initialize -destination-path svm1:vol1_dr</td>
+              <td><span class="tag tag-snap">Snapshot</span></td>
+            </tr>
+            <!-- Network -->
+            <tr data-cat="net">
+              <td>network interface show</td>
+              <td>Show all LIFs, their IP, port, and status</td>
+              <td>network interface show -vserver svm0</td>
+              <td><span class="tag tag-net">Network</span></td>
+            </tr>
+            <tr data-cat="net">
+              <td>network interface create</td>
+              <td>Create a new logical interface (LIF)</td>
+              <td>network interface create -vserver svm0 -lif lif1 -address 10.0.0.10 -netmask 255.255.255.0 -home-node node1 -home-port e0a</td>
+              <td><span class="tag tag-net">Network</span></td>
+            </tr>
+            <tr data-cat="net">
+              <td>network interface migrate</td>
+              <td>Migrate a LIF to another port non-disruptively</td>
+              <td>network interface migrate -vserver svm0 -lif lif1 -dest-node node2 -dest-port e0b</td>
+              <td><span class="tag tag-net">Network</span></td>
+            </tr>
+            <tr data-cat="net">
+              <td>network port show</td>
+              <td>List physical and VLAN ports on each node</td>
+              <td>network port show -fields port,link,speed,health-status</td>
+              <td><span class="tag tag-net">Network</span></td>
+            </tr>
+            <tr data-cat="net">
+              <td>network route show</td>
+              <td>Display routing table entries per SVM</td>
+              <td>network route show -vserver svm0</td>
+              <td><span class="tag tag-net">Network</span></td>
+            </tr>
+            <!-- SVM -->
+            <tr data-cat="svm">
+              <td>vserver show</td>
+              <td>List all SVMs with type, state, and allowed protocols</td>
+              <td>vserver show -fields name,state,allowed-protocols</td>
+              <td><span class="tag tag-svm">SVM</span></td>
+            </tr>
+            <tr data-cat="svm">
+              <td>vserver create</td>
+              <td>Create a new SVM (data vserver)</td>
+              <td>vserver create -vserver svm_new -aggregate aggr1 -rootvolume svm_new_root -rootvolume-security-style unix</td>
+              <td><span class="tag tag-svm">SVM</span></td>
+            </tr>
+            <tr data-cat="svm">
+              <td>vserver nfs show</td>
+              <td>Show NFS configuration for an SVM</td>
+              <td>vserver nfs show -vserver svm0</td>
+              <td><span class="tag tag-svm">SVM</span></td>
+            </tr>
+            <tr data-cat="svm">
+              <td>vserver export-policy show</td>
+              <td>Display export policies and their rules</td>
+              <td>vserver export-policy show -vserver svm0</td>
+              <td><span class="tag tag-svm">SVM</span></td>
+            </tr>
+            <!-- Diagnostics -->
+            <tr data-cat="diag">
+              <td>system node show</td>
+              <td>Show node health, OS version, uptime, and model</td>
+              <td>system node show -fields node,health,model,uptime</td>
+              <td><span class="tag tag-diag">Diagnostics</span></td>
+            </tr>
+            <tr data-cat="diag">
+              <td>cluster show</td>
+              <td>Show cluster nodes and overall health status</td>
+              <td>cluster show</td>
+              <td><span class="tag tag-diag">Diagnostics</span></td>
+            </tr>
+            <tr data-cat="diag">
+              <td>storage aggregate show</td>
+              <td>Show aggregate capacity, state, and disk info</td>
+              <td>storage aggregate show -fields availsize,usedsize,state</td>
+              <td><span class="tag tag-diag">Diagnostics</span></td>
+            </tr>
+            <tr data-cat="diag">
+              <td>event log show</td>
+              <td>Display cluster event messages by severity or time</td>
+              <td>event log show -severity error -time-range 1h</td>
+              <td><span class="tag tag-diag">Diagnostics</span></td>
+            </tr>
+            <tr data-cat="diag">
+              <td>security audit log show</td>
+              <td>View admin activity for security compliance auditing</td>
+              <td>security audit log show -user admin</td>
+              <td><span class="tag tag-diag">Diagnostics</span></td>
+            </tr>
+            <tr data-cat="diag">
+              <td>qos policy-group show</td>
+              <td>View QoS policy groups and their IOPS/throughput limits</td>
+              <td>qos policy-group show</td>
+              <td><span class="tag tag-diag">Diagnostics</span></td>
+            </tr>
+            <tr data-cat="diag">
+              <td>statistics show-periodic</td>
+              <td>Live performance counter polling for a specific object</td>
+              <td>statistics show-periodic -object volume -instance vol1 -counter read_ops,write_ops -interval 5</td>
+              <td><span class="tag tag-diag">Diagnostics</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="page-footer">NetApp Automation Hub · Commands Reference</footer>
+  </main>
+
+  <script src="assets/js/search.js"></script>
+  <script>
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    // Init category
+    let activeCategory = null;
+    document.querySelector('.filter-btn').classList.add('active');
+  </script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tips & Tricks · NetApp Hub</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">NetApp<br><span class="logo-sub">Automation Hub</span></span>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
+      <span class="search-icon">⌕</span>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+    <ul class="nav-links">
+      <li class="nav-section-label">Navigation</li>
+      <li><a href="index.html"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
+      <li><a href="powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
+      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
+      <li><a href="tips.html" class="active"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
+    </ul>
+    <div class="sidebar-footer"><span>Built for NetApp Engineers</span></div>
+  </nav>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div class="header-badge" style="color:var(--accent-tips);background:rgba(255,107,107,0.08);border-color:rgba(255,107,107,0.25)">Field Notes</div>
+      <h1 class="page-title">Tips & Tricks</h1>
+      <p class="page-subtitle">Field-tested practices, common gotchas, and expert shortcuts collected from real NetApp automation work.</p>
+    </header>
+
+    <!-- API Tips -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-tips);background:rgba(255,107,107,0.08);border-color:rgba(255,107,107,0.2)">01</span> REST API Tips</h2>
+      <div class="tips-grid">
+
+        <div class="tip-card tip-good">
+          <div class="tip-label">Best Practice</div>
+          <div class="tip-title">Always use <code>-fields</code> to filter API responses</div>
+          <div class="tip-body">
+            ONTAP REST API returns all fields by default, which can be massive. Specifying
+            <code>?fields=name,size,state</code> dramatically reduces payload size and response time.
+            This also reduces load on the cluster for bulk operations.
+          </div>
+        </div>
+
+        <div class="tip-card tip-warn">
+          <div class="tip-label">Heads Up</div>
+          <div class="tip-title">Handle pagination — default limit is 1000 records</div>
+          <div class="tip-body">
+            The ONTAP REST API caps records per response. Check for <code>_links.next.href</code> in the
+            response body and loop until it's absent. Miss this and you silently get incomplete data in
+            large clusters.
+          </div>
+        </div>
+
+        <div class="tip-card tip-warn">
+          <div class="tip-label">Important</div>
+          <div class="tip-title">Poll async jobs — don't assume POST = done</div>
+          <div class="tip-body">
+            Many ONTAP REST operations (volume create, move, SnapMirror) return a job object instead of waiting.
+            Always check for <code>job.uuid</code> in the response and poll <code>/api/cluster/jobs/{uuid}</code>
+            until <code>state == "success"</code> before proceeding.
+          </div>
+        </div>
+
+        <div class="tip-card tip-danger">
+          <div class="tip-label">Security</div>
+          <div class="tip-title">Never hardcode credentials in scripts</div>
+          <div class="tip-body">
+            Use environment variables (<code>os.getenv()</code> in Python, <code>$env:VAR</code> in PowerShell)
+            or a secrets manager like HashiCorp Vault or AWS Secrets Manager. Credentials committed to
+            Git are a significant security incident waiting to happen.
+          </div>
+        </div>
+
+        <div class="tip-card tip-info">
+          <div class="tip-label">Migration</div>
+          <div class="tip-title">Migrate from ZAPI to REST — ZAPI is deprecated</div>
+          <div class="tip-body">
+            NetApp has deprecated ZAPI (ZAPIs). All new automation should use the ONTAP REST API.
+            ONTAP 9.12.1+ restricts ZAPI in some contexts. The
+            <code>netapp-ontap</code> Python library and PSTK both now default to REST. Use the
+            ONTAP API Explorer (<code>https://&lt;cluster&gt;/docs/api</code>) to explore endpoints.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Python Tips -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">02</span> Python-Specific Tips</h2>
+      <div class="tips-grid">
+
+        <div class="tip-card tip-good">
+          <div class="tip-label">Pattern</div>
+          <div class="tip-title">Use <code>get_collection(fields=...)</code> not <code>get_all()</code></div>
+          <div class="tip-body">
+            <code>Volume.get_collection(fields="name,size")</code> is lazy — it pages automatically.
+            Avoid <code>list(Volume.get_collection())</code> without filters on large clusters as it fetches
+            everything into memory.
+          </div>
+        </div>
+
+        <div class="tip-card tip-good">
+          <div class="tip-label">Pattern</div>
+          <div class="tip-title">Use <code>hydrate=True</code> after POST to get UUID back</div>
+          <div class="tip-body">
+            When calling <code>.post(hydrate=True)</code>, the library automatically fetches the created
+            resource back so you have access to server-assigned fields like <code>uuid</code> and
+            <code>create_time</code> immediately after creation.
+          </div>
+        </div>
+
+        <div class="tip-card tip-warn">
+          <div class="tip-label">Gotcha</div>
+          <div class="tip-title">Size values are in bytes, not GB</div>
+          <div class="tip-body">
+            All size fields in the ONTAP REST API and <code>netapp-ontap</code> library use bytes.
+            Always convert: <code>10 * 1024 ** 3</code> for 10 GB. When printing, divide accordingly.
+            Forgetting this will create a 10-byte volume.
+          </div>
+        </div>
+
+        <div class="tip-card tip-info">
+          <div class="tip-label">Tip</div>
+          <div class="tip-title">Use the ONTAP API Explorer for discovery</div>
+          <div class="tip-body">
+            Browse to <code>https://&lt;your-cluster&gt;/docs/api</code> for an interactive Swagger UI
+            of all available REST endpoints. You can try requests live and see the exact JSON structures
+            before coding.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PowerShell Tips -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">03</span> PowerShell-Specific Tips</h2>
+      <div class="tips-grid">
+
+        <div class="tip-card tip-ps">
+          <div class="tip-label">PSTK</div>
+          <div class="tip-title">Use <code>-Query</code> to filter server-side, not client-side</div>
+          <div class="tip-body">
+            Instead of <code>Get-NcVol | Where-Object {$_.State -eq 'online'}</code>, use
+            <code>Get-NcVol -Query @{State="online"}</code>. The latter filters on the cluster,
+            reducing data transfer significantly on large environments.
+          </div>
+        </div>
+
+        <div class="tip-card tip-ps">
+          <div class="tip-label">PSTK</div>
+          <div class="tip-title">Store the controller object for multi-cluster scripts</div>
+          <div class="tip-body">
+            <code>$ctrl = Connect-NcController ...</code> then pass <code>-Controller $ctrl</code>
+            to every cmdlet. This lets you manage multiple clusters in the same script without
+            accidentally running commands on the wrong cluster.
+          </div>
+        </div>
+
+        <div class="tip-card tip-good">
+          <div class="tip-label">Reporting</div>
+          <div class="tip-title">Pipe to <code>Export-Csv</code> for instant reports</div>
+          <div class="tip-body">
+            <code>Get-NcVol | Select Name,TotalSize,Used | Export-Csv report.csv -NoTypeInformation</code>
+            is a fast way to produce capacity reports. Combine with <code>ConvertTo-Html</code> for
+            email-ready HTML reports.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CLI Tips -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-cmd);background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.2)">04</span> ONTAP CLI Tips</h2>
+      <div class="tips-grid">
+
+        <div class="tip-card tip-warn">
+          <div class="tip-label">CLI Tip</div>
+          <div class="tip-title">Use <code>-fields *</code> to discover available fields</div>
+          <div class="tip-body">
+            Not sure what fields a command supports? Run <code>volume show -fields ?</code> to see all
+            available field names for that object. Then narrow your query with only the fields you need.
+          </div>
+        </div>
+
+        <div class="tip-card tip-info">
+          <div class="tip-label">Efficiency</div>
+          <div class="tip-title">Use <code>set -privilege advanced</code> to unlock more commands</div>
+          <div class="tip-body">
+            Many diagnostic and low-level commands are hidden at the default privilege level. Use
+            <code>set -privilege advanced</code> to access them. Remember to return to
+            <code>set -privilege admin</code> when done to avoid accidental destructive changes.
+          </div>
+        </div>
+
+        <div class="tip-card tip-good">
+          <div class="tip-label">Shortcut</div>
+          <div class="tip-title">Tab completion and <code>?</code> work everywhere in ONTAP CLI</div>
+          <div class="tip-body">
+            Press Tab to auto-complete command names, flags, and even values like volume names or
+            vserver names. Append <code>?</code> to any partial command to see available options.
+            This alone saves significant time during operations.
+          </div>
+        </div>
+
+        <div class="tip-card tip-danger">
+          <div class="tip-label">Danger</div>
+          <div class="tip-title">Test destructive operations in ONTAP Simulator first</div>
+          <div class="tip-body">
+            Before running scripts that delete snapshots, move volumes, or break SnapMirror relationships
+            in production, test them in ONTAP Select or the ONTAP Simulator. Many operations are
+            irreversible or require lengthy recovery if run incorrectly.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Quick Reference -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num">05</span> Quick Environment Checklist</h2>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">bash · pre-flight checklist</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="cmt"># Verify ONTAP REST API is reachable</span>
+curl -sk -u admin:password https://&lt;cluster&gt;/api/cluster | python3 -m json.tool
+
+<span class="cmt"># Check ONTAP version (must be 9.6+ for REST)</span>
+curl -sk -u admin:password https://&lt;cluster&gt;/api/cluster?fields=version
+
+<span class="cmt"># Verify Python library version</span>
+python3 -c "import netapp_ontap; print(netapp_ontap.__version__)"
+
+<span class="cmt"># Verify PSTK version</span>
+(Get-Module NetApp.ONTAP).Version
+
+<span class="cmt"># Check API Explorer (open in browser)</span>
+echo "Open: https://&lt;cluster&gt;/docs/api"</code></pre>
+      </div>
+    </section>
+
+    <footer class="page-footer">NetApp Automation Hub · Tips & Tricks</footer>
+  </main>
+
+  <script src="assets/js/search.js"></script>
+  <script>function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }</script>
+</body>
+</html>

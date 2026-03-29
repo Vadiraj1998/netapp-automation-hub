@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PowerShell Automation · NetApp Hub</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">NetApp<br><span class="logo-sub">Automation Hub</span></span>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
+      <span class="search-icon">⌕</span>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+    <ul class="nav-links">
+      <li class="nav-section-label">Navigation</li>
+      <li><a href="index.html"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
+      <li><a href="powershell.html" class="active"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
+      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
+      <li><a href="tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
+    </ul>
+    <div class="sidebar-footer"><span>Built for NetApp Engineers</span></div>
+  </nav>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div class="header-badge" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.25)">PowerShell</div>
+      <h1 class="page-title">PowerShell Automation</h1>
+      <p class="page-subtitle">Scripts using the NetApp PowerShell Toolkit (PSTK) and direct REST API calls via Invoke-RestMethod for ONTAP management.</p>
+    </header>
+
+    <!-- Setup -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">01</span> Install NetApp PowerShell Toolkit</h2>
+      <div class="prose">
+        <p>The NetApp PowerShell Toolkit (PSTK) is available on the PowerShell Gallery. It provides ONTAP-specific cmdlets wrapping both REST and ZAPI endpoints.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-ps)">powershell</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="cmt"># Install from PowerShell Gallery</span>
+<span class="fn">Install-Module</span> -Name NetApp.ONTAP -Scope CurrentUser
+
+<span class="cmt"># Import the module</span>
+<span class="fn">Import-Module</span> NetApp.ONTAP
+
+<span class="cmt"># Verify installation</span>
+<span class="fn">Get-Command</span> -Module NetApp.ONTAP | <span class="fn">Select-Object</span> -First <span class="num">10</span></code></pre>
+      </div>
+    </section>
+
+    <!-- Connect -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">02</span> Connect to ONTAP Cluster</h2>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-ps)">powershell</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="kw">$</span><span class="var">ClusterIP</span>   = <span class="str">"192.168.1.100"</span>
+<span class="kw">$</span><span class="var">Credentials</span> = <span class="fn">Get-Credential</span>  <span class="cmt"># Prompts securely</span>
+
+<span class="cmt"># Connect — skipping cert check (use -Https with valid cert in prod)</span>
+<span class="fn">Connect-NcController</span> -Name <span class="kw">$</span><span class="var">ClusterIP</span> -Credential <span class="kw">$</span><span class="var">Credentials</span>
+
+<span class="cmt"># Verify connection</span>
+<span class="fn">Get-NcController</span></code></pre>
+      </div>
+    </section>
+
+    <!-- Volume ops -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">03</span> Volume Operations</h2>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-ps)">powershell · List Volumes</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="cmt"># All volumes</span>
+<span class="fn">Get-NcVol</span>
+
+<span class="cmt"># Filtered by SVM with selected properties</span>
+<span class="fn">Get-NcVol</span> -Vserver <span class="str">"svm0"</span> |
+    <span class="fn">Select-Object</span> Name, TotalSize, Used, State |
+    <span class="fn">Format-Table</span> -AutoSize
+
+<span class="cmt"># Export to CSV for reporting</span>
+<span class="fn">Get-NcVol</span> |
+    <span class="fn">Select-Object</span> Name, TotalSize, Used, Vserver, State |
+    <span class="fn">Export-Csv</span> -Path <span class="str">"volumes_$(Get-Date -Format yyyyMMdd).csv"</span> -NoTypeInformation</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-ps)">powershell · Create Volume</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="fn">New-NcVol</span> `
+    -Name      <span class="str">"my_new_vol"</span> `
+    -Vserver   <span class="str">"svm0"</span> `
+    -Aggregate <span class="str">"aggr1"</span> `
+    -Size      <span class="str">"10g"</span> `
+    -JunctionPath <span class="str">"/my_new_vol"</span> `
+    -SpaceReserve <span class="str">"none"</span>
+
+<span class="fn">Write-Host</span> <span class="str">"Volume created successfully"</span> -ForegroundColor Green</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-ps)">powershell · Resize Volume</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="cmt"># Resize to 20 GB</span>
+<span class="fn">Set-NcVolSize</span> -Name <span class="str">"my_new_vol"</span> -Vserver <span class="str">"svm0"</span> -NewSize <span class="str">"20g"</span>
+
+<span class="cmt"># Verify</span>
+<span class="fn">Get-NcVol</span> -Name <span class="str">"my_new_vol"</span> | <span class="fn">Select-Object</span> Name, TotalSize</code></pre>
+      </div>
+    </section>
+
+    <!-- Snapshots -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">04</span> Snapshot Management</h2>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-ps)">powershell</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="cmt"># Create a snapshot</span>
+<span class="fn">New-NcSnapshot</span> -VolumeName <span class="str">"my_vol"</span> -SnapshotName <span class="str">"snap_20240801"</span>
+
+<span class="cmt"># List snapshots for a volume</span>
+<span class="fn">Get-NcSnapshot</span> -VolumeName <span class="str">"my_vol"</span> |
+    <span class="fn">Select-Object</span> Name, Created |
+    <span class="fn">Format-Table</span> -AutoSize
+
+<span class="cmt"># Delete a snapshot</span>
+<span class="fn">Remove-NcSnapshot</span> -VolumeName <span class="str">"my_vol"</span> -SnapshotName <span class="str">"snap_old"</span>
+
+<span class="cmt"># Bulk cleanup: delete snapshots older than 30 days</span>
+<span class="kw">$</span><span class="var">cutoff</span> = (Get-Date).AddDays(-<span class="num">30</span>)
+<span class="fn">Get-NcSnapshot</span> -VolumeName <span class="str">"my_vol"</span> |
+    <span class="fn">Where-Object</span> { <span class="kw">$_</span>.Created -lt <span class="kw">$</span><span class="var">cutoff</span> } |
+    <span class="fn">ForEach-Object</span> { <span class="fn">Remove-NcSnapshot</span> -VolumeName <span class="str">"my_vol"</span> -SnapshotName <span class="kw">$_</span>.Name }</code></pre>
+      </div>
+    </section>
+
+    <!-- Direct REST -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">05</span> Invoke-RestMethod (Direct API)</h2>
+      <div class="prose">
+        <p>Use <code style="color:var(--accent-ps)">Invoke-RestMethod</code> to call ONTAP REST endpoints without PSTK — great for newer endpoints or CI/CD pipelines where installing PSTK isn't ideal.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-ps)">powershell</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="kw">$</span><span class="var">base</span>    = <span class="str">"https://192.168.1.100/api"</span>
+<span class="kw">$</span><span class="var">creds</span>   = [Convert]::ToBase64String(
+              [Text.Encoding]::ASCII.GetBytes(<span class="str">"admin:Password123"</span>))
+<span class="kw">$</span><span class="var">headers</span> = @{
+    Authorization  = <span class="str">"Basic </span><span class="kw">$</span><span class="var">creds</span><span class="str">"</span>
+    <span class="str">"Content-Type"</span> = <span class="str">"application/json"</span>
+}
+
+<span class="cmt"># Skip SSL verify (dev only)</span>
+<span class="kw">if</span> (-not ([System.Management.Automation.PSTypeName]<span class="str">'TrustAll'</span>).Type) {
+    Add-Type <span class="str">@"
+using System.Net; using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+public class TrustAll {
+    public static void SetCallback() {
+        ServicePointManager.ServerCertificateValidationCallback =
+            (s,c,ch,e) => true;
+    }
+}
+"@</span>
+    [TrustAll]::SetCallback()
+}
+
+<span class="cmt"># Get cluster info</span>
+<span class="kw">$</span><span class="var">result</span> = <span class="fn">Invoke-RestMethod</span> <span class="str">"</span><span class="kw">$</span><span class="var">base</span><span class="str">/cluster?fields=name,version"</span> -Headers <span class="kw">$</span><span class="var">headers</span>
+<span class="fn">Write-Host</span> <span class="str">"Cluster: </span><span class="kw">$($</span><span class="var">result</span>.name<span class="kw">)</span><span class="str"> | ONTAP: </span><span class="kw">$($</span><span class="var">result</span>.version.full<span class="kw">)</span><span class="str">"</span>
+
+<span class="cmt"># List volumes via REST</span>
+<span class="kw">$</span><span class="var">vols</span> = <span class="fn">Invoke-RestMethod</span> <span class="str">"</span><span class="kw">$</span><span class="var">base</span><span class="str">/storage/volumes?fields=name,state,size"</span> -Headers <span class="kw">$</span><span class="var">headers</span>
+<span class="kw">$</span><span class="var">vols</span>.records | <span class="fn">Format-Table</span> name, state, size</code></pre>
+      </div>
+    </section>
+
+    <!-- Error handling -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">06</span> Error Handling</h2>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-ps)">powershell</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="kw">try</span> {
+    <span class="fn">New-NcVol</span> -Name <span class="str">"test_vol"</span> -Vserver <span class="str">"svm0"</span> `
+              -Aggregate <span class="str">"aggr1"</span> -Size <span class="str">"5g"</span> -ErrorAction Stop
+
+    <span class="fn">Write-Host</span> <span class="str">"[OK] Volume created"</span> -ForegroundColor Green
+}
+<span class="kw">catch</span> {
+    <span class="fn">Write-Host</span> <span class="str">"[ERROR] </span><span class="kw">$($</span>_.Exception.Message<span class="kw">)</span><span class="str">"</span> -ForegroundColor Red
+    <span class="cmt"># Log to file</span>
+    <span class="kw">$</span>_ | <span class="fn">Out-File</span> -FilePath <span class="str">"errors.log"</span> -Append
+}
+<span class="kw">finally</span> {
+    <span class="fn">Disconnect-NcController</span>
+}</code></pre>
+      </div>
+    </section>
+
+    <footer class="page-footer">NetApp Automation Hub · PowerShell Automation</footer>
+  </main>
+
+  <script src="assets/js/search.js"></script>
+  <script>function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }</script>
+</body>
+</html>

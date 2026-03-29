@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NetApp Automation Hub</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">NetApp<br><span class="logo-sub">Automation Hub</span></span>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
+      <span class="search-icon">⌕</span>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+    <ul class="nav-links">
+      <li class="nav-section-label">Navigation</li>
+      <li><a href="index.html" class="active"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
+      <li><a href="powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
+      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
+      <li><a href="tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <span>Built for NetApp Engineers</span>
+    </div>
+  </nav>
+
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="page-header">
+      <div class="header-badge">Documentation</div>
+      <h1 class="page-title">NetApp Automation Hub</h1>
+      <p class="page-subtitle">A comprehensive reference for automating NetApp storage infrastructure using Python and PowerShell.</p>
+    </header>
+
+    <!-- Cards Grid -->
+    <section class="cards-grid">
+      <a href="python.html" class="card card--python">
+        <div class="card-icon">🐍</div>
+        <h3>Python Automation</h3>
+        <p>Scripts using ONTAP REST API, NetApp Manageability SDK, and automation frameworks for storage provisioning, monitoring, and reporting.</p>
+        <div class="card-tag">REST API · SDK · Ansible</div>
+      </a>
+      <a href="powershell.html" class="card card--ps">
+        <div class="card-icon">⚡</div>
+        <h3>PowerShell Automation</h3>
+        <p>NetApp PowerShell Toolkit (PSTK) scripts for ONTAP management, DataONTAP module usage, and Windows-based automation workflows.</p>
+        <div class="card-tag">PSTK · DataONTAP · WFA</div>
+      </a>
+      <a href="commands.html" class="card card--cmd">
+        <div class="card-icon">⌨</div>
+        <h3>Commands Reference</h3>
+        <p>Quick lookup for ONTAP CLI commands, options, and examples — organized by category with descriptions and usage notes.</p>
+        <div class="card-tag">ONTAP CLI · Reference</div>
+      </a>
+      <a href="tips.html" class="card card--tips">
+        <div class="card-icon">💡</div>
+        <h3>Tips & Tricks</h3>
+        <p>Best practices, shortcuts, common gotchas, and expert-level tips collected from real NetApp automation work in the field.</p>
+        <div class="card-tag">Best Practices · Gotchas</div>
+      </a>
+    </section>
+
+    <!-- Quick Overview -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num">01</span> About This Hub</h2>
+      <div class="prose">
+        <p>This site is a living reference for NetApp storage automation engineers. It covers practical scripts, command references, and field-tested tips for working with ONTAP using Python and PowerShell.</p>
+        <p>All examples are tested against ONTAP 9.x and use publicly available APIs and toolkits. Use the search bar to find anything across the site, or navigate by section using the sidebar.</p>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Coverage</div>
+          <div class="info-value">ONTAP 9.8+</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Python</div>
+          <div class="info-value">3.8+</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">PowerShell</div>
+          <div class="info-value">5.1 / 7+</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">APIs</div>
+          <div class="info-value">REST · ZAPI</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num">02</span> Stack Overview</h2>
+      <div class="stack-list">
+        <div class="stack-item">
+          <span class="stack-dot dot-py"></span>
+          <span class="stack-name">netapp-ontap</span>
+          <span class="stack-desc">Official Python client library for ONTAP REST API</span>
+        </div>
+        <div class="stack-item">
+          <span class="stack-dot dot-ps"></span>
+          <span class="stack-name">NetApp.ONTAP (PSTK)</span>
+          <span class="stack-desc">NetApp PowerShell Toolkit for ONTAP management</span>
+        </div>
+        <div class="stack-item">
+          <span class="stack-dot dot-py"></span>
+          <span class="stack-name">requests / httpx</span>
+          <span class="stack-desc">HTTP clients for direct ONTAP REST API calls</span>
+        </div>
+        <div class="stack-item">
+          <span class="stack-dot dot-ps"></span>
+          <span class="stack-name">Invoke-RestMethod</span>
+          <span class="stack-desc">PowerShell native REST client for ONTAP API</span>
+        </div>
+        <div class="stack-item">
+          <span class="stack-dot dot-py"></span>
+          <span class="stack-name">Ansible (na_ontap_*)</span>
+          <span class="stack-desc">Declarative automation using NetApp Ansible modules</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      NetApp Automation Hub · Built for engineers, by engineers
+    </footer>
+  </main>
+
+  <script src="assets/js/search.js"></script>
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

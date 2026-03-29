@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Python Automation · NetApp Hub</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">NetApp<br><span class="logo-sub">Automation Hub</span></span>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
+      <span class="search-icon">⌕</span>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+    <ul class="nav-links">
+      <li class="nav-section-label">Navigation</li>
+      <li><a href="index.html"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="python.html" class="active"><span class="nav-icon">🐍</span> Python Automation</a></li>
+      <li><a href="powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
+      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
+      <li><a href="tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
+    </ul>
+    <div class="sidebar-footer"><span>Built for NetApp Engineers</span></div>
+  </nav>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div class="header-badge" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.25)">Python</div>
+      <h1 class="page-title">Python Automation</h1>
+      <p class="page-subtitle">Scripts and examples using the ONTAP REST API, netapp-ontap Python library, and Ansible for storage automation.</p>
+    </header>
+
+    <!-- Section 1: Setup -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">01</span> Installation & Setup</h2>
+      <div class="prose">
+        <p>Install the official NetApp ONTAP Python client library and dependencies. Requires Python 3.8+.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-py)">bash</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="cmt"># Install NetApp ONTAP Python client</span>
+pip install netapp-ontap
+
+<span class="cmt"># Also useful</span>
+pip install requests urllib3 pandas</code></pre>
+      </div>
+    </section>
+
+    <!-- Section 2: Connect -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">02</span> Connect to ONTAP</h2>
+      <div class="prose">
+        <p>Establish a connection to the ONTAP cluster using the <code style="color:var(--accent-py)">HostConnection</code> context manager. Always use environment variables or a secrets manager for credentials — never hardcode them.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-py)">python</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="kw">import</span> <span class="cls">os</span>
+<span class="kw">from</span> <span class="cls">netapp_ontap</span> <span class="kw">import</span> <span class="cls">HostConnection</span>, <span class="cls">NetAppRestError</span>
+<span class="kw">from</span> <span class="cls">netapp_ontap.resources</span> <span class="kw">import</span> <span class="cls">Volume</span>
+
+<span class="var">cluster_ip</span> = os.getenv(<span class="str">"ONTAP_HOST"</span>)
+<span class="var">username</span>   = os.getenv(<span class="str">"ONTAP_USER"</span>, <span class="str">"admin"</span>)
+<span class="var">password</span>   = os.getenv(<span class="str">"ONTAP_PASS"</span>)
+
+<span class="kw">with</span> <span class="cls">HostConnection</span>(
+    cluster_ip,
+    username=username,
+    password=password,
+    verify=<span class="kw">False</span>  <span class="cmt"># use True with valid cert in prod</span>
+):
+    <span class="cmt"># All API calls inside this block use this connection</span>
+    <span class="kw">for</span> vol <span class="kw">in</span> Volume.get_collection():
+        <span class="fn">print</span>(vol.name)</code></pre>
+      </div>
+    </section>
+
+    <!-- Section 3: Volume Operations -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">03</span> Volume Operations</h2>
+      <div class="prose">
+        <p>List volumes, create a new FlexVol, and modify volume properties. All size values are in bytes.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-py)">python · List Volumes</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="kw">from</span> <span class="cls">netapp_ontap.resources</span> <span class="kw">import</span> <span class="cls">Volume</span>
+
+<span class="kw">for</span> vol <span class="kw">in</span> Volume.get_collection(
+    fields=<span class="str">"name,svm,size,state,space"</span>
+):
+    <span class="fn">print</span>(
+        <span class="str">f"Name: </span><span class="var">{vol.name}</span><span class="str">"</span>,
+        <span class="str">f"SVM: </span><span class="var">{vol.svm.name}</span><span class="str">"</span>,
+        <span class="str">f"Size: </span><span class="var">{vol.size // (1024**3)}</span><span class="str"> GB"</span>,
+        <span class="str">f"State: </span><span class="var">{vol.state}</span><span class="str">"</span>
+    )</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-py)">python · Create Volume</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="kw">from</span> <span class="cls">netapp_ontap.resources</span> <span class="kw">import</span> <span class="cls">Volume</span>
+<span class="kw">from</span> <span class="cls">netapp_ontap</span> <span class="kw">import</span> <span class="cls">NetAppRestError</span>
+
+<span class="var">vol</span> = Volume.from_dict({
+    <span class="str">"name"</span>: <span class="str">"my_new_vol"</span>,
+    <span class="str">"svm"</span>: {<span class="str">"name"</span>: <span class="str">"svm0"</span>},
+    <span class="str">"aggregates"</span>: [{<span class="str">"name"</span>: <span class="str">"aggr1"</span>}],
+    <span class="str">"size"</span>: <span class="num">10</span> * <span class="num">1024</span> ** <span class="num">3</span>,  <span class="cmt"># 10 GB in bytes</span>
+    <span class="str">"space.snapshot.reserve_percent"</span>: <span class="num">5</span>,
+    <span class="str">"nas"</span>: {<span class="str">"path"</span>: <span class="str">"/my_new_vol"</span>},
+})
+
+<span class="kw">try</span>:
+    vol.post(hydrate=<span class="kw">True</span>)
+    <span class="fn">print</span>(<span class="str">f"Volume created: </span><span class="var">{vol.name}</span><span class="str"> (UUID: </span><span class="var">{vol.uuid}</span><span class="str">)"</span>)
+<span class="kw">except</span> <span class="cls">NetAppRestError</span> <span class="kw">as</span> err:
+    <span class="fn">print</span>(<span class="str">f"Error: </span><span class="var">{err}</span><span class="str">"</span>)</code></pre>
+      </div>
+    </section>
+
+    <!-- Section 4: Snapshot -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">04</span> Snapshot Management</h2>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-py)">python · Create & List Snapshots</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="kw">from</span> <span class="cls">netapp_ontap.resources</span> <span class="kw">import</span> <span class="cls">Snapshot</span>
+
+<span class="var">vol_uuid</span> = <span class="str">"your-volume-uuid-here"</span>
+
+<span class="cmt"># Create a snapshot</span>
+<span class="var">snap</span> = Snapshot(vol_uuid)
+snap.name = <span class="str">"my_snap_20240801"</span>
+snap.post(hydrate=<span class="kw">True</span>)
+<span class="fn">print</span>(<span class="str">f"Snapshot created: </span><span class="var">{snap.name}</span><span class="str">"</span>)
+
+<span class="cmt"># List all snapshots for a volume</span>
+<span class="kw">for</span> snap <span class="kw">in</span> Snapshot.get_collection(vol_uuid):
+    <span class="fn">print</span>(<span class="str">f"  </span><span class="var">{snap.name}</span><span class="str"> created: </span><span class="var">{snap.create_time}</span><span class="str">"</span>)
+
+<span class="cmt"># Delete oldest snapshot</span>
+<span class="var">old_snap</span> = Snapshot(vol_uuid, name=<span class="str">"old_snap_20240101"</span>)
+old_snap.delete()</code></pre>
+      </div>
+    </section>
+
+    <!-- Section 5: Direct REST -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">05</span> Direct REST API with requests</h2>
+      <div class="prose">
+        <p>Sometimes you want raw HTTP control — useful for endpoints not yet wrapped by the SDK, or for quick scripting.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-py)">python</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="kw">import</span> <span class="cls">requests</span>
+<span class="kw">import</span> <span class="cls">urllib3</span>
+urllib3.disable_warnings()
+
+<span class="var">BASE</span>  = <span class="str">"https://192.168.1.100/api"</span>
+<span class="var">AUTH</span>  = (<span class="str">"admin"</span>, <span class="str">"password"</span>)
+<span class="var">HDRS</span>  = {<span class="str">"Content-Type"</span>: <span class="str">"application/json"</span>}
+
+<span class="cmt"># List SVMs</span>
+<span class="var">r</span> = requests.get(
+    <span class="str">f"</span><span class="var">{BASE}</span><span class="str">/svm/svms"</span>,
+    auth=AUTH, headers=HDRS, verify=<span class="kw">False</span>,
+    params={<span class="str">"fields"</span>: <span class="str">"name,state,uuid"</span>}
+)
+r.raise_for_status()
+
+<span class="kw">for</span> svm <span class="kw">in</span> r.json()[<span class="str">"records"</span>]:
+    <span class="fn">print</span>(<span class="str">f"SVM: </span><span class="var">{svm['name']}</span><span class="str"> — </span><span class="var">{svm['state']}</span><span class="str">"</span>)
+
+<span class="cmt"># Handle pagination</span>
+<span class="var">next_link</span> = r.json().get(<span class="str">"_links"</span>, {}).get(<span class="str">"next"</span>, {}).get(<span class="str">"href"</span>)
+<span class="kw">while</span> next_link:
+    <span class="var">r</span> = requests.get(
+        <span class="str">f"https://192.168.1.100</span><span class="var">{next_link}</span><span class="str">"</span>,
+        auth=AUTH, headers=HDRS, verify=<span class="kw">False</span>
+    )
+    <span class="var">next_link</span> = r.json().get(<span class="str">"_links"</span>, {}).get(<span class="str">"next"</span>, {}).get(<span class="str">"href"</span>)</code></pre>
+      </div>
+    </section>
+
+    <!-- Section 6: Aggregate Monitoring -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">06</span> Aggregate Capacity Report</h2>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang" style="color:var(--accent-py)">python</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="kw">from</span> <span class="cls">netapp_ontap.resources</span> <span class="kw">import</span> <span class="cls">Aggregate</span>
+
+<span class="fn">print</span>(<span class="str">f"{'Aggregate':<25} {'Total GB':>10} {'Used GB':>10} {'Used %':>8}"</span>)
+<span class="fn">print</span>(<span class="str">"-"</span> * <span class="num">55</span>)
+
+<span class="kw">for</span> aggr <span class="kw">in</span> Aggregate.get_collection(
+    fields=<span class="str">"name,space"</span>
+):
+    <span class="var">space</span>    = aggr.space.block_storage
+    <span class="var">total_gb</span> = space.size / <span class="num">1024</span>**<span class="num">3</span>
+    <span class="var">used_gb</span>  = space.used / <span class="num">1024</span>**<span class="num">3</span>
+    <span class="var">pct</span>      = (space.used / space.size) * <span class="num">100</span>
+    <span class="fn">print</span>(<span class="str">f"</span><span class="var">{aggr.name:<25}</span><span class="str"> </span><span class="var">{total_gb:>10.1f}</span><span class="str"> </span><span class="var">{used_gb:>10.1f}</span><span class="str"> </span><span class="var">{pct:>7.1f}</span><span class="str">%"</span>)</code></pre>
+      </div>
+    </section>
+
+    <footer class="page-footer">NetApp Automation Hub · Python Automation</footer>
+  </main>
+
+  <script src="assets/js/search.js"></script>
+  <script>function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }</script>
+</body>
+</html>
