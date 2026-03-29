@@ -2163,13 +2163,19 @@ table tbody tr:hover {
       width: 100vw;          /* Prevent horizontal overflow */
       overflow-x: hidden;
     }
+
+    /* NetApp Hub logo */
+    .sidebar-logo {
+      padding: 24px 20px 20px;
+      margin-left: auto;  /* Pushes logo to the right */
+    }
   
     /* Hamburger Menu Button */
     .sidebar-toggle {
       display: flex;
       position: fixed;
       top: 15px;
-      left: 70px; /* Put it on the top right */
+      left: 20px; /* Put it on the top right */
       background: var(--bg2);
       color: var(--text);
       border: 1px solid var(--border2);
