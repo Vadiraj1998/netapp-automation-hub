@@ -2147,7 +2147,7 @@ table tbody tr:hover {
     /* --- 1. Main Layout & Sidebar --- */
     .sidebar {
       transform: translateX(-100%);
-      padding-top: 70px;
+      padding-top: 50px;
       width: 280px;
       z-index: 1000; /* Float above content */
       box-shadow: 5px 0 25px rgba(0,0,0,0.5);
