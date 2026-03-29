@@ -2147,6 +2147,7 @@ table tbody tr:hover {
     /* --- 1. Main Layout & Sidebar --- */
     .sidebar {
       transform: translateX(-100%);
+      padding-top: 70px;
       width: 280px;
       z-index: 1000; /* Float above content */
       box-shadow: 5px 0 25px rgba(0,0,0,0.5);
@@ -2158,7 +2159,7 @@ table tbody tr:hover {
   
     .main-content {
       margin-left: 0;        /* Remove desktop sidebar margin */
-      padding: 120px 20px 40px; /* Extra top padding for the hamburger menu */
+      padding: 70px 20px 40px; /* Extra top padding for the hamburger menu */
       width: 100vw;          /* Prevent horizontal overflow */
       overflow-x: hidden;
     }
