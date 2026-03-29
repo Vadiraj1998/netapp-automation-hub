@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Volume Migration: From ZAPI to REST API · NetApp Hub</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">NetApp<br><span class="logo-sub">Hub</span></span>
+      </a>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
+      <span class="search-icon">⌕</span>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+    <ul class="nav-links">
+      <li class="nav-section-label">Navigation</li>
+      <li><a href="../index.html"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="../get-started.html"><span class="nav-icon">🚀</span> Get Started</a></li>
+      <li><a href="../commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
+      <li><a href="../tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
+      <li><a href="../python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
+      <li><a href="../powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
+      <li><a href="../blog-community.html" class="active"><span class="nav-icon">📝</span> Blog</a></li>
+      <li><a href="../about-me.html"><span class="nav-icon">👤</span> About Me</a></li>
+    </ul>
+    <div class="sidebar-footer"><span>Built for NetApp Engineers</span></div>
+  </nav>
+
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <main class="main-content">
+
+    <!-- Back Button -->
+    <div style="margin-bottom: 32px;">
+      <a href="../blog-community.html" class="post-back-btn">← Back to Blog</a>
+    </div>
+
+    <!-- Post Header -->
+    <header class="post-header">
+      <div class="post-meta-top">
+        <span class="blog-tag">REST API</span>
+        <span class="blog-tag">Migration</span>
+        <span class="blog-tag">ZAPI</span>
+      </div>
+      <h1 class="post-title">Volume Migration: From ZAPI to REST API</h1>
+      <div class="post-meta">
+        <span class="blog-author">Community Submission</span>
+        <span class="blog-dot">•</span>
+        <span class="blog-date">Dec 8, 2024</span>
+        <span class="blog-dot">•</span>
+        <span class="post-read-time">6 min read</span>
+      </div>
+    </header>
+
+    <!-- Post Content -->
+    <article class="post-content">
+
+      <p>
+        NetApp deprecated ZAPI (ONTAP API) in ONTAP 9.12.1 and it will be removed in a future release.
+        If you're still using ZAPI-based scripts, now is the time to migrate to the modern REST API.
+        This guide walks you through the key differences and how to rewrite your volume management scripts.
+      </p>
+
+      <h2>Why ZAPI is Going Away</h2>
+      <p>
+        ZAPI has been around since the early days of ONTAP and served us well. But REST APIs are the
+        industry standard now — they're easier to use, better documented, and work with modern tooling
+        like Ansible, Terraform, and Python's <code>requests</code> library.
+      </p>
+
+      <h2>Key Differences</h2>
+      <ul>
+        <li><strong>Protocol:</strong> ZAPI uses XML over HTTP. REST uses JSON over HTTPS.</li>
+        <li><strong>Authentication:</strong> Both support basic auth, but REST also supports OAuth 2.0.</li>
+        <li><strong>Versioning:</strong> REST API is versioned (<code>/api/v1/</code>), making upgrades safer.</li>
+        <li><strong>Discovery:</strong> REST API has self-documenting endpoints via Swagger UI at <code>/docs/api</code>.</li>
+      </ul>
+
+      <h2>Before: ZAPI Volume Create (Python)</h2>
+      <p>Here's how you used to create a volume using the old NetApp Manageability SDK:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">python</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="cmt"># Old way - using ZAPI via NetApp Manageability SDK</span>
+<span class="kw">from</span> <span class="cls">NaServer</span> <span class="kw">import</span> NaServer, NaElement
+
+<span class="kw">def</span> <span class="fn">create_volume_zapi</span>(cluster, user, password, vserver, vol_name, aggr, size):
+    s = <span class="cls">NaServer</span>(cluster, <span class="num">1</span>, <span class="num">21</span>)
+    s.set_server_type(<span class="str">"FILER"</span>)
+    s.set_transport_type(<span class="str">"HTTPS"</span>)
+    s.set_port(<span class="num">443</span>)
+    s.set_style(<span class="str">"LOGIN"</span>)
+    s.set_admin_user(user, password)
+    s.set_vserver(vserver)
+
+    api = <span class="cls">NaElement</span>(<span class="str">"volume-create"</span>)
+    api.child_add_string(<span class="str">"volume"</span>, vol_name)
+    api.child_add_string(<span class="str">"containing-aggr-name"</span>, aggr)
+    api.child_add_string(<span class="str">"size"</span>, size)
+    api.child_add_string(<span class="str">"space-reserve"</span>, <span class="str">"none"</span>)
+    api.child_add_string(<span class="str">"junction-path"</span>, <span class="str">f"/{vol_name}"</span>)
+
+    result = s.invoke_elem(api)
+    <span class="kw">if</span> result.results_status() == <span class="str">"failed"</span>:
+        <span class="kw">raise</span> <span class="cls">Exception</span>(result.results_reason())
+
+    <span class="fn">print</span>(<span class="str">f"Volume {vol_name} created successfully"</span>)
+
+<span class="cmt"># Usage</span>
+create_volume_zapi(<span class="str">"192.168.1.100"</span>, <span class="str">"admin"</span>, <span class="str">"password"</span>, 
+                   <span class="str">"svm1"</span>, <span class="str">"vol_test"</span>, <span class="str">"aggr1"</span>, <span class="str">"10g"</span>)</code></pre>
+      </div>
+
+      <h2>After: REST API Volume Create (Python)</h2>
+      <p>Here's the modern equivalent using the ONTAP REST API:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">python</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="cmt"># New way - using ONTAP REST API</span>
+<span class="kw">import</span> requests
+<span class="kw">import</span> urllib3
+urllib3.disable_warnings()
+
+<span class="kw">def</span> <span class="fn">create_volume_rest</span>(cluster, user, password, vserver, vol_name, aggr, size_mb):
+    base_url = <span class="str">f"https://{cluster}/api"</span>
+    auth = (user, password)
+    headers = {<span class="str">"Content-Type"</span>: <span class="str">"application/json"</span>}
+
+    payload = {
+        <span class="str">"name"</span>: vol_name,
+        <span class="str">"svm"</span>: {<span class="str">"name"</span>: vserver},
+        <span class="str">"aggregates"</span>: [{<span class="str">"name"</span>: aggr}],
+        <span class="str">"size"</span>: size_mb * <span class="num">1024</span> * <span class="num">1024</span>,  <span class="cmt"># Convert MB to bytes</span>
+        <span class="str">"space"</span>: {<span class="str">"guarantee"</span>: {<span class="str">"type"</span>: <span class="str">"none"</span>}},
+        <span class="str">"nas"</span>: {<span class="str">"path"</span>: <span class="str">f"/{vol_name}"</span>}
+    }
+
+    response = requests.post(
+        <span class="str">f"{base_url}/storage/volumes"</span>,
+        auth=auth,
+        headers=headers,
+        json=payload,
+        verify=<span class="kw">False</span>
+    )
+
+    <span class="kw">if</span> response.status_code == <span class="num">201</span>:
+        <span class="fn">print</span>(<span class="str">f"✅ Volume '{vol_name}' created successfully"</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="str">f"❌ Error: {response.json()}"</span>)
+        response.raise_for_status()
+
+<span class="cmt"># Usage</span>
+create_volume_rest(<span class="str">"192.168.1.100"</span>, <span class="str">"admin"</span>, <span class="str">"password"</span>,
+                   <span class="str">"svm1"</span>, <span class="str">"vol_test"</span>, <span class="str">"aggr1"</span>, <span class="num">10240</span>)</code></pre>
+      </div>
+
+      <h2>Using the Official netapp-ontap Library</h2>
+      <p>Even cleaner — use NetApp's official Python library which wraps the REST API:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">bash</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>pip install netapp-ontap</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">python</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="kw">from</span> netapp_ontap <span class="kw">import</span> HostConnection, NetAppRestError
+<span class="kw">from</span> netapp_ontap.resources <span class="kw">import</span> Volume
+
+<span class="kw">with</span> <span class="cls">HostConnection</span>(<span class="str">"192.168.1.100"</span>, username=<span class="str">"admin"</span>, password=<span class="str">"password"</span>, verify=<span class="kw">False</span>):
+    volume = <span class="cls">Volume</span>(
+        name=<span class="str">"vol_test"</span>,
+        svm={<span class="str">"name"</span>: <span class="str">"svm1"</span>},
+        aggregates=[{<span class="str">"name"</span>: <span class="str">"aggr1"</span>}],
+        size=<span class="num">10</span> * <span class="num">1024</span> ** <span class="num">3</span>,  <span class="cmt"># 10 GB in bytes</span>
+        nas={<span class="str">"path"</span>: <span class="str">"/vol_test"</span>}
+    )
+
+    <span class="kw">try</span>:
+        volume.post()
+        <span class="fn">print</span>(<span class="str">f"✅ Volume '{volume.name}' created"</span>)
+    <span class="kw">except</span> <span class="cls">NetAppRestError</span> <span class="kw">as</span> e:
+        <span class="fn">print</span>(<span class="str">f"❌ Error: {e}"</span>)</code></pre>
+      </div>
+
+      <h2>ZAPI → REST API Cheat Sheet</h2>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">text</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>ZAPI Call                        REST API Endpoint
+─────────────────────────────────────────────────────
+volume-create                 →  POST   /api/storage/volumes
+volume-destroy                →  DELETE /api/storage/volumes/{uuid}
+volume-get-iter               →  GET    /api/storage/volumes
+volume-modify                 →  PATCH  /api/storage/volumes/{uuid}
+snapshot-create               →  POST   /api/storage/volumes/{uuid}/snapshots
+snapmirror-get-iter           →  GET    /api/snapmirror/relationships
+vserver-get-iter              →  GET    /api/svm/svms
+net-interface-get-iter        →  GET    /api/network/ip/interfaces</code></pre>
+      </div>
+
+      <h2>Common Pitfalls</h2>
+      <ul>
+        <li><strong>Size units:</strong> ZAPI accepts strings like <code>"10g"</code>. REST API expects bytes as an integer.</li>
+        <li><strong>Async jobs:</strong> Some REST calls return a <code>202 Accepted</code> with a job ID — you need to poll <code>/api/cluster/jobs/{uuid}</code> for completion.</li>
+        <li><strong>Field names:</strong> ZAPI used hyphenated names (<code>space-reserve</code>). REST uses nested JSON objects.</li>
+        <li><strong>SVM context:</strong> In ZAPI you set the vserver on the connection. In REST, it's part of the request body.</li>
+      </ul>
+
+      <h2>Handling Async Jobs</h2>
+      <p>Some operations like volume creation return a job. Here's how to handle it:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">python</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code><span class="kw">import</span> time
+<span class="kw">import</span> requests
+
+<span class="kw">def</span> <span class="fn">wait_for_job</span>(cluster, auth, job_url, timeout=<span class="num">60</span>):
+    <span class="str">"""Poll a job until it completes or times out."""</span>
+    start = time.time()
+    
+    <span class="kw">while</span> time.time() - start < timeout:
+        response = requests.get(
+            <span class="str">f"https://{cluster}{job_url}"</span>,
+            auth=auth,
+            verify=<span class="kw">False</span>
+        )
+        job = response.json()
+        state = job.get(<span class="str">"state"</span>)
+
+        <span class="kw">if</span> state == <span class="str">"success"</span>:
+            <span class="fn">print</span>(<span class="str">"✅ Job completed successfully"</span>)
+            <span class="kw">return True</span>
+        <span class="kw">elif</span> state == <span class="str">"failure"</span>:
+            <span class="fn">print</span>(<span class="str">f"❌ Job failed: {job.get('message')}"</span>)
+            <span class="kw">return False</span>
+        
+        time.sleep(<span class="num">2</span>)  <span class="cmt"># Wait 2 seconds before polling again</span>
+
+    <span class="fn">print</span>(<span class="str">"⚠️ Job timed out"</span>)
+    <span class="kw">return False</span>
+
+<span class="cmt"># Usage after a POST that returns 202</span>
+response = requests.post(...)
+<span class="kw">if</span> response.status_code == <span class="num">202</span>:
+    job_url = response.json()[<span class="str">"job"</span>][<span class="str">"_links"</span>][<span class="str">"self"</span>][<span class="str">"href"</span>]
+    <span class="fn">wait_for_job</span>(<span class="str">"192.168.1.100"</span>, auth, job_url)</code></pre>
+      </div>
+
+      <h2>Conclusion</h2>
+      <p>
+        Migrating from ZAPI to REST is a one-time effort that pays off. Your scripts become 
+        cleaner, easier to maintain, and future-proof. Start by identifying all ZAPI calls 
+        in your codebase, map them to REST equivalents using the cheat sheet above, 
+        and test thoroughly in a non-production environment first.
+      </p>
+
+    </article>
+
+    <!-- Post Footer -->
+    <div class="post-footer">
+      <a href="../blog-community.html" class="post-back-btn">← Back to Blog</a>
+    </div>
+
+    <div id="footer-container"></div>
+  </main>
+
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/search.js"></script>
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+    }
+
+    function copyCode(btn) {
+      const pre = btn.closest('.code-block').querySelector('pre');
+      navigator.clipboard.writeText(pre.innerText).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

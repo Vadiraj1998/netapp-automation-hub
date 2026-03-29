@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog · NetApp Hub</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">NetApp<br><span class="logo-sub">Hub</span></span>
+      </a>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
+      <span class="search-icon">⌕</span>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+    <ul class="nav-links">
+      <li class="nav-section-label">Navigation</li>
+      <li><a href="index.html"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="get-started.html"><span class="nav-icon">🚀</span> Get Started</a></li>
+      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
+      <li><a href="tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
+      <li><a href="python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
+      <li><a href="powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
+      <li><a href="blog-community.html" class="active"><span class="nav-icon">📝</span> Blog</a></li>
+      <li><a href="about-me.html"><span class="nav-icon">👤</span> About Me</a></li>
+    </ul>
+    <div class="sidebar-footer"><span>Built for NetApp Engineers</span></div>
+  </nav>
+
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div class="header-badge">Community</div>
+      <h1 class="page-title">Blog & Articles (WORK IN PROGRESS)</h1>
+      <p class="page-subtitle">Community-driven insights and deep dives into NetApp. Share your story with fellow engineers.</p>
+    </header>
+
+    <!-- Search function for blogs -->
+    <section class="content-section">
+        <h2 class="section-title"><span class="section-num">Latest Posts</span></h2>
+  
+        <!-- ADD THIS SEARCH BAR -->
+        <div class="blog-search-bar">
+          <span class="blog-search-icon">⌕</span>
+          <input 
+            type="text" 
+            id="blogSearch" 
+            placeholder="Search posts by title, author, tag..." 
+            oninput="searchPosts(this.value)"
+            autocomplete="off"
+          />
+          <button class="blog-search-clear" id="searchClearBtn" onclick="clearSearch()" style="display:none;">✕</button>
+        </div>
+  
+        <!-- Search result count -->
+        <div id="searchResultCount" style="display:none; margin-bottom: 16px; font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);"></div>
+  
+        <div class="blog-grid" id="blogGrid"></div>
+        <div class="pagination" id="pagination"></div>
+      </section>
+
+    <section class="content-section">
+        <div class="submit-post-card">
+          <div class="submit-post-content">
+            <h3>✍️ Share Your Experience</h3>
+            <p>Got a NetApp story? Send us your post and we'll feature it!</p>
+            <button class="btn btn-primary" onclick="openSubmitForm()">Submit a Post</button>
+          </div>
+          <div class="submit-post-icon">📧</div>
+        </div>
+    </section>
+
+    <!-- Submit Form Modal -->
+    <div id="submitFormModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeSubmitForm()">✕</button>
+        <h2 style="margin-bottom: 24px; color: var(--text-bright);">Submit Your Blog Post</h2>
+        <form id="submitPostForm" action="https://formspree.io/f/mwvwlrrj" method="POST" onsubmit="handlePostSubmit(event)">
+          <div class="form-group">
+            <label for="postTitle">Post Title *</label>
+            <input type="text" id="postTitle" name="title" required placeholder="e.g., Automating Volume Creation"/>
+          </div>
+          <div class="form-group">
+            <label for="postAuthor">Your Name / Handle *</label>
+            <input type="text" id="postAuthor" name="author" required placeholder="John Doe"/>
+          </div>
+          <div class="form-group">
+            <label for="postEmail">Email Address *</label>
+            <input type="email" id="postEmail" name="email" required placeholder="your@email.com"/>
+          </div>
+          <div class="form-group">
+            <label for="postExcerpt">Excerpt (short summary) *</label>
+            <textarea id="postExcerpt" name="excerpt" required rows="2" placeholder="A one-line summary..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="postContent">Article Content *</label>
+            <textarea id="postContent" name="content" required rows="10" placeholder="Write your article here..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="postTags">Tags (comma-separated) *</label>
+            <input type="text" id="postTags" name="tags" required placeholder="Python, SnapMirror, Automation"/>
+          </div>
+          <div class="form-group">
+            <label for="postCategory">Category *</label>
+            <select id="postCategory" name="category" required>
+              <option value="">Select a category</option>
+              <option value="python">Python Automation</option>
+              <option value="powershell">PowerShell Automation</option>
+              <option value="ansible">Ansible & IaC</option>
+              <option value="best-practices">Best Practices</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="postImage">Featured Image (optional)</label>
+            <input type="file" id="postImage" name="image" accept="image/*"/>
+            <small>Max 2MB. Recommended: 800x400px</small>
+          </div>
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 8px; text-transform: none; letter-spacing: 0; font-size: 13px;">
+              <input type="checkbox" name="agree" required/>
+              <span>I agree to have my article published with my name credited</span>
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeSubmitForm()">Cancel</button>
+            <!--
+            <button type="submit" class="btn btn-primary">Submit Post</button>
+            -->
+            <button class="btn btn-primary">Work In Progress</button>
+        </div>
+          <input type="hidden" name="_subject" value="New Blog Post Submission - NetApp Hub"/>
+        </form>
+      </div>
+    </div>
+
+    <div id="footer-container"></div>
+  </main>
+
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/search.js"></script>
+  <script>
+    let allPosts = [];
+    const POSTS_PER_PAGE = 10;
+    let currentPage = 1;
+
+    async function loadBlogPosts() {
+      try {
+        const response = await fetch('assets/data/posts-index.json');
+        const data = await response.json();
+        allPosts = data.posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+        filteredPosts = [...allPosts];
+        renderPage(currentPage);
+        renderPagination();
+      } catch (error) {
+        console.error('Error loading blog posts:', error);
+        document.getElementById('blogGrid').innerHTML = `<p style="color:var(--text-dim)">No posts yet. Be the first to submit one!</p>`;
+      }
+    }
+
+    function searchPosts(query) {
+      const clearBtn = document.getElementById('searchClearBtn');
+      const resultCount = document.getElementById('searchResultCount');
+      query = query.trim().toLowerCase();
+
+      clearBtn.style.display = query ? 'flex' : 'none';
+
+      if (!query) {
+        filteredPosts = [...allPosts];
+        resultCount.style.display = 'none';
+      } else {
+        filteredPosts = allPosts.filter(post => {
+          const tagsStr = Array.isArray(post.tags)
+            ? post.tags.join(' ').toLowerCase()
+            : post.tags.toLowerCase();
+
+          return (
+            post.title.toLowerCase().includes(query) ||
+            post.author.toLowerCase().includes(query) ||
+            post.excerpt.toLowerCase().includes(query) ||
+            post.category.toLowerCase().includes(query) ||
+            tagsStr.includes(query)
+          );
+        });
+
+        resultCount.style.display = 'block';
+        resultCount.textContent = filteredPosts.length === 0
+          ? `No posts found for "${query}"`
+          : `${filteredPosts.length} post${filteredPosts.length > 1 ? 's' : ''} found for "${query}"`;
+      }
+
+      currentPage = 1;
+      renderPage(currentPage);
+      renderPagination();
+    }
+
+    function clearSearch() {
+      document.getElementById('blogSearch').value = '';
+      searchPosts('');
+    }
+
+    function renderPage(page) {
+      const start = (page - 1) * POSTS_PER_PAGE;
+      const end = start + POSTS_PER_PAGE;
+      renderBlogPosts(filteredPosts.slice(start, end));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderBlogPosts(posts) {
+      const blogGrid = document.getElementById('blogGrid');
+      blogGrid.innerHTML = '';
+
+      if (posts.length === 0) {
+        blogGrid.innerHTML = `<p style="color:var(--text-dim)">No posts yet. Be the first to submit one!</p>`;
+        return;
+      }
+
+      posts.forEach(post => {
+        const isFeatured = post.featured === true;
+        const imageHTML = post.image
+          ? `<div class="blog-image"><img src="assets/images/blog/${post.image}" alt="${post.title}" onerror="this.parentElement.style.display='none'"></div>`
+          : '';
+        const tagsArray = Array.isArray(post.tags) ? post.tags : post.tags.split(',').map(t => t.trim());
+
+        const [year, month, day] = post.date.split('-').map(Number);
+        const dateObj = new Date(year, month - 1, day);
+        const formattedDate = dateObj.toLocaleDateString('en-US', {
+          year: 'numeric', month: 'short', day: 'numeric'
+        });
+
+        const featuredBadge = isFeatured
+          ? `<span class="blog-featured-badge">⭐ Featured</span>`
+          : '';
+
+        blogGrid.innerHTML += `
+          <article class="blog-card ${isFeatured ? 'blog-featured' : ''}">
+            ${imageHTML}
+            <div class="blog-card-body">
+              ${featuredBadge}
+              <div class="blog-meta">
+                <span class="blog-author">${post.author}</span>
+                <span class="blog-dot">•</span>
+                <span class="blog-date">${formattedDate}</span>
+              </div>
+              <h3 class="blog-title">${post.title}</h3>
+              <p class="blog-excerpt">${post.excerpt}</p>
+              <div class="blog-tags">
+                ${tagsArray.map(tag => `<span class="blog-tag">${tag}</span>`).join('')}
+              </div>
+              <a href="${post.file}" class="blog-read-more">Read Article →</a>
+            </div>
+          </article>
+        `;
+      });
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
+      const pagination = document.getElementById('pagination');
+
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+      }
+
+      let html = `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>← Prev</button>`;
+
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+      }
+
+      html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next →</button>`;
+
+      pagination.innerHTML = html;
+    }
+
+    function goToPage(page) {
+      const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
+      if (page < 1 || page > totalPages) return;
+      currentPage = page;
+      renderPage(currentPage);
+      renderPagination();
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+    }
+
+    function openSubmitForm() {
+      document.getElementById('submitFormModal').style.display = 'flex';
+    }
+
+    function closeSubmitForm() {
+      document.getElementById('submitFormModal').style.display = 'none';
+    }
+
+    async function handlePostSubmit(event) {
+      event.preventDefault();
+      const form = document.getElementById('submitPostForm');
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.textContent = 'Submitting...';
+      submitBtn.disabled = true;
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (response.ok) {
+          closeSubmitForm();
+          form.reset();
+          showSuccessBanner('✅ Thank you! Your post has been submitted for review.');
+        } else {
+          showSuccessBanner('❌ Something went wrong. Please try again.', true);
+        }
+      } catch (error) {
+        showSuccessBanner('❌ Network error. Please try again.', true);
+      } finally {
+        submitBtn.textContent = 'Submit Post';
+        submitBtn.disabled = false;
+      }
+    }
+
+    function showSuccessBanner(message, isError = false) {
+      const banner = document.createElement('div');
+      banner.style.cssText = `
+        position: fixed; top: 24px; right: 24px;
+        background: ${isError ? 'rgba(255,107,107,0.15)' : 'rgba(61,200,160,0.15)'};
+        border: 1px solid ${isError ? 'var(--accent-tips)' : 'var(--accent-py)'};
+        color: ${isError ? 'var(--accent-tips)' : 'var(--accent-py)'};
+        padding: 16px 24px; border-radius: 10px;
+        font-family: var(--font-mono); font-size: 14px;
+        z-index: 9999; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      `;
+      banner.textContent = message;
+      document.body.appendChild(banner);
+      setTimeout(() => banner.remove(), 4000);
+    }
+
+    document.getElementById('submitFormModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'submitFormModal') closeSubmitForm();
+    });
+
+    document.addEventListener('DOMContentLoaded', loadBlogPosts);
+  </script>
+</body>
+</html>
