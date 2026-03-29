@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NetApp Automation Hub</title>
+  <title>NetApp </title>
   <link rel="stylesheet" href="assets/css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 </head>
@@ -13,8 +13,10 @@
   <!-- Sidebar -->
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <span class="logo-icon">⬡</span>
-      <span class="logo-text">NetApp<br><span class="logo-sub">Automation Hub</span></span>
+      <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; cursor: pointer;">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">NetApp<br><span class="logo-sub">Hub</span></span>
+      </a>
     </div>
     <div class="sidebar-search">
       <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
@@ -24,9 +26,9 @@
     <ul class="nav-links">
       <li class="nav-section-label">Navigation</li>
       <li><a href="index.html" class="active"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
       <li><a href="python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
       <li><a href="powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
-      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
       <li><a href="tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
     </ul>
     <div class="sidebar-footer">
@@ -40,12 +42,33 @@
   <main class="main-content">
     <header class="page-header">
       <div class="header-badge">Documentation</div>
-      <h1 class="page-title">NetApp Automation Hub</h1>
+      <h1 class="page-title">NetApp Hub</h1>
       <p class="page-subtitle">A comprehensive reference for automating NetApp storage infrastructure using Python and PowerShell.</p>
     </header>
+    <!-- Big Search Bar -->
+    <section class="hero-search">
+      <div class="search-container">
+        <input 
+          type="text" 
+          id="heroSearch" 
+          class="hero-search-input" 
+          placeholder="Search commands, scripts, tips... across entire hub" 
+          oninput="liveSearch(this.value)"
+          autocomplete="off"
+        />
+        <span class="search-icon">⌕</span>
+        <div id="heroSearchResults" class="search-results"></div>
+      </div>
+    </section>
 
     <!-- Cards Grid -->
     <section class="cards-grid">
+      <a href="commands.html" class="card card--cmd">
+        <div class="card-icon">⌨</div>
+        <h3>Commands Reference</h3>
+        <p>Quick lookup for ONTAP CLI commands, options, and examples — organized by category with descriptions and usage notes.</p>
+        <div class="card-tag">ONTAP CLI · Reference</div>
+      </a>
       <a href="python.html" class="card card--python">
         <div class="card-icon">🐍</div>
         <h3>Python Automation</h3>
@@ -57,12 +80,6 @@
         <h3>PowerShell Automation</h3>
         <p>NetApp PowerShell Toolkit (PSTK) scripts for ONTAP management, DataONTAP module usage, and Windows-based automation workflows.</p>
         <div class="card-tag">PSTK · DataONTAP · WFA</div>
-      </a>
-      <a href="commands.html" class="card card--cmd">
-        <div class="card-icon">⌨</div>
-        <h3>Commands Reference</h3>
-        <p>Quick lookup for ONTAP CLI commands, options, and examples — organized by category with descriptions and usage notes.</p>
-        <div class="card-tag">ONTAP CLI · Reference</div>
       </a>
       <a href="tips.html" class="card card--tips">
         <div class="card-icon">💡</div>
@@ -132,7 +149,7 @@
     </section>
 
     <footer class="page-footer">
-      NetApp Automation Hub · Built for engineers, by engineers
+      NetApp Hub · Built for engineers, by engineers
     </footer>
   </main>
 

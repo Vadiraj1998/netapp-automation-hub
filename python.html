@@ -12,8 +12,10 @@
 
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <span class="logo-icon">⬡</span>
-      <span class="logo-text">NetApp<br><span class="logo-sub">Automation Hub</span></span>
+      <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; cursor: pointer;">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">NetApp<br><span class="logo-sub">Hub</span></span>
+      </a>
     </div>
     <div class="sidebar-search">
       <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
@@ -23,9 +25,9 @@
     <ul class="nav-links">
       <li class="nav-section-label">Navigation</li>
       <li><a href="index.html"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
       <li><a href="python.html" class="active"><span class="nav-icon">🐍</span> Python Automation</a></li>
       <li><a href="powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
-      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
       <li><a href="tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
     </ul>
     <div class="sidebar-footer"><span>Built for NetApp Engineers</span></div>
@@ -41,7 +43,7 @@
 
     <!-- Section 1: Setup -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">01</span> Installation & Setup</h2>
+      <h2 class="section-title" id="installation-setup"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">01</span> Installation & Setup</h2>
       <div class="prose">
         <p>Install the official NetApp ONTAP Python client library and dependencies. Requires Python 3.8+.</p>
       </div>
@@ -60,7 +62,7 @@ pip install requests urllib3 pandas</code></pre>
 
     <!-- Section 2: Connect -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">02</span> Connect to ONTAP</h2>
+      <h2 class="section-title" id="connect-to-ontap"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">02</span> Connect to ONTAP</h2>
       <div class="prose">
         <p>Establish a connection to the ONTAP cluster using the <code style="color:var(--accent-py)">HostConnection</code> context manager. Always use environment variables or a secrets manager for credentials — never hardcode them.</p>
       </div>
@@ -91,7 +93,7 @@ pip install requests urllib3 pandas</code></pre>
 
     <!-- Section 3: Volume Operations -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">03</span> Volume Operations</h2>
+      <h2 class="section-title" id="volume-operations"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">03</span> Volume Operations</h2>
       <div class="prose">
         <p>List volumes, create a new FlexVol, and modify volume properties. All size values are in bytes.</p>
       </div>
@@ -141,7 +143,7 @@ pip install requests urllib3 pandas</code></pre>
 
     <!-- Section 4: Snapshot -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">04</span> Snapshot Management</h2>
+      <h2 class="section-title" id="snapshot-management"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">04</span> Snapshot Management</h2>
       <div class="code-block">
         <div class="code-header">
           <span class="code-lang" style="color:var(--accent-py)">python · Create & List Snapshots</span>
@@ -169,7 +171,7 @@ old_snap.delete()</code></pre>
 
     <!-- Section 5: Direct REST -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">05</span> Direct REST API with requests</h2>
+      <h2 class="section-title" id="direct-rest-api"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">05</span> Direct REST API with requests</h2>
       <div class="prose">
         <p>Sometimes you want raw HTTP control — useful for endpoints not yet wrapped by the SDK, or for quick scripting.</p>
       </div>
@@ -210,7 +212,7 @@ r.raise_for_status()
 
     <!-- Section 6: Aggregate Monitoring -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">06</span> Aggregate Capacity Report</h2>
+      <h2 class="section-title"  =id="aggregate-capacity-report"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">06</span> Aggregate Capacity Report</h2>
       <div class="code-block">
         <div class="code-header">
           <span class="code-lang" style="color:var(--accent-py)">python</span>
@@ -232,7 +234,7 @@ r.raise_for_status()
       </div>
     </section>
 
-    <footer class="page-footer">NetApp Automation Hub · Python Automation</footer>
+    <footer class="page-footer">NetApp Hub · Python Automation</footer>
   </main>
 
   <script src="assets/js/search.js"></script>

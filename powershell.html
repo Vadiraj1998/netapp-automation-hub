@@ -12,8 +12,10 @@
 
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <span class="logo-icon">⬡</span>
-      <span class="logo-text">NetApp<br><span class="logo-sub">Automation Hub</span></span>
+      <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; cursor: pointer;">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">NetApp<br><span class="logo-sub">Hub</span></span>
+      </a>
     </div>
     <div class="sidebar-search">
       <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
@@ -23,9 +25,9 @@
     <ul class="nav-links">
       <li class="nav-section-label">Navigation</li>
       <li><a href="index.html"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
       <li><a href="python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
       <li><a href="powershell.html" class="active"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
-      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
       <li><a href="tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
     </ul>
     <div class="sidebar-footer"><span>Built for NetApp Engineers</span></div>
@@ -41,7 +43,7 @@
 
     <!-- Setup -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">01</span> Install NetApp PowerShell Toolkit</h2>
+      <h2 class="section-title"  id="install-netapp-powershell-toolkit"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">01</span> Install NetApp PowerShell Toolkit</h2>
       <div class="prose">
         <p>The NetApp PowerShell Toolkit (PSTK) is available on the PowerShell Gallery. It provides ONTAP-specific cmdlets wrapping both REST and ZAPI endpoints.</p>
       </div>
@@ -63,7 +65,7 @@
 
     <!-- Connect -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">02</span> Connect to ONTAP Cluster</h2>
+      <h2 class="section-title" id="connect-to-ontap-cluster"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">02</span> Connect to ONTAP Cluster</h2>
       <div class="code-block">
         <div class="code-header">
           <span class="code-lang" style="color:var(--accent-ps)">powershell</span>
@@ -82,7 +84,7 @@
 
     <!-- Volume ops -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">03</span> Volume Operations</h2>
+      <h2 class="section-title" id="volume-operations"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">03</span> Volume Operations</h2>
       <div class="code-block">
         <div class="code-header">
           <span class="code-lang" style="color:var(--accent-ps)">powershell · List Volumes</span>
@@ -133,7 +135,7 @@
 
     <!-- Snapshots -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">04</span> Snapshot Management</h2>
+      <h2 class="section-title" id="snapshot-management"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">04</span> Snapshot Management</h2>
       <div class="code-block">
         <div class="code-header">
           <span class="code-lang" style="color:var(--accent-ps)">powershell</span>
@@ -160,7 +162,7 @@
 
     <!-- Direct REST -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">05</span> Invoke-RestMethod (Direct API)</h2>
+      <h2 class="section-title" id="invoke-restmethod-direct-api"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">05</span> Invoke-RestMethod (Direct API)</h2>
       <div class="prose">
         <p>Use <code style="color:var(--accent-ps)">Invoke-RestMethod</code> to call ONTAP REST endpoints without PSTK — great for newer endpoints or CI/CD pipelines where installing PSTK isn't ideal.</p>
       </div>
@@ -204,7 +206,7 @@ public class TrustAll {
 
     <!-- Error handling -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">06</span> Error Handling</h2>
+      <h2 class="section-title" id="error-handling"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">06</span> Error Handling</h2>
       <div class="code-block">
         <div class="code-header">
           <span class="code-lang" style="color:var(--accent-ps)">powershell</span>
@@ -227,7 +229,7 @@ public class TrustAll {
       </div>
     </section>
 
-    <footer class="page-footer">NetApp Automation Hub · PowerShell Automation</footer>
+    <footer class="page-footer">NetApp Hub · PowerShell Automation</footer>
   </main>
 
   <script src="assets/js/search.js"></script>

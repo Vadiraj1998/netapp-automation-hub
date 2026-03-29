@@ -12,8 +12,10 @@
 
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <span class="logo-icon">⬡</span>
-      <span class="logo-text">NetApp<br><span class="logo-sub">Automation Hub</span></span>
+      <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; cursor: pointer;">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">NetApp<br><span class="logo-sub">Hub</span></span>
+      </a>
     </div>
     <div class="sidebar-search">
       <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
@@ -23,9 +25,9 @@
     <ul class="nav-links">
       <li class="nav-section-label">Navigation</li>
       <li><a href="index.html"><span class="nav-icon">⌂</span> Home</a></li>
+      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
       <li><a href="python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
       <li><a href="powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
-      <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
       <li><a href="tips.html" class="active"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
     </ul>
     <div class="sidebar-footer"><span>Built for NetApp Engineers</span></div>
@@ -39,9 +41,56 @@
       <p class="page-subtitle">Field-tested practices, common gotchas, and expert shortcuts collected from real NetApp automation work.</p>
     </header>
 
+    <!-- CLI Tips -->
+    <section class="content-section">
+      <h2 class="section-title" id="ontap-cli-tips"><span class="section-num" style="color:var(--accent-cmd);background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.2)">01</span> ONTAP CLI Tips</h2>
+      <div class="tips-grid">
+
+        <div class="tip-card tip-warn">
+          <div class="tip-label">CLI Tip</div>
+          <div class="tip-title">Use <code>-fields *</code> to discover available fields</div>
+          <div class="tip-body">
+            Not sure what fields a command supports? Run <code>volume show -fields ?</code> to see all
+            available field names for that object. Then narrow your query with only the fields you need.
+          </div>
+        </div>
+
+        <div class="tip-card tip-info">
+          <div class="tip-label">Efficiency</div>
+          <div class="tip-title">Use <code>set -privilege advanced</code> to unlock more commands</div>
+          <div class="tip-body">
+            Many diagnostic and low-level commands are hidden at the default privilege level. Use
+            <code>set -privilege advanced</code> to access them. Remember to return to
+            <code>set -privilege admin</code> when done to avoid accidental destructive changes.
+          </div>
+        </div>
+
+        <div class="tip-card tip-good">
+          <div class="tip-label">Shortcut</div>
+          <div class="tip-title">Tab completion and <code>?</code> work everywhere in ONTAP CLI</div>
+          <div class="tip-body">
+            Press Tab to auto-complete command names, flags, and even values like volume names or
+            vserver names. Append <code>?</code> to any partial command to see available options.
+            This alone saves significant time during operations.
+          </div>
+        </div>
+
+        <div class="tip-card tip-danger">
+          <div class="tip-label">Danger</div>
+          <div class="tip-title">Test destructive operations in ONTAP Simulator first</div>
+          <div class="tip-body">
+            Before running scripts that delete snapshots, move volumes, or break SnapMirror relationships
+            in production, test them in ONTAP Select or the ONTAP Simulator. Many operations are
+            irreversible or require lengthy recovery if run incorrectly.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- API Tips -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-tips);background:rgba(255,107,107,0.08);border-color:rgba(255,107,107,0.2)">01</span> REST API Tips</h2>
+      <h2 class="section-title" id="rest-api-tips"><span class="section-num" style="color:var(--accent-tips);background:rgba(255,107,107,0.08);border-color:rgba(255,107,107,0.2)">02</span> REST API Tips</h2>
       <div class="tips-grid">
 
         <div class="tip-card tip-good">
@@ -100,7 +149,7 @@
 
     <!-- Python Tips -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">02</span> Python-Specific Tips</h2>
+      <h2 class="section-title" id="python-specific-tips"><span class="section-num" style="color:var(--accent-py);background:rgba(61,200,160,0.08);border-color:rgba(61,200,160,0.2)">02</span> Python-Specific Tips</h2>
       <div class="tips-grid">
 
         <div class="tip-card tip-good">
@@ -148,7 +197,7 @@
 
     <!-- PowerShell Tips -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">03</span> PowerShell-Specific Tips</h2>
+      <h2 class="section-title" id="powershell-specific-tips"><span class="section-num" style="color:var(--accent-ps);background:rgba(123,97,255,0.08);border-color:rgba(123,97,255,0.2)">03</span> PowerShell-Specific Tips</h2>
       <div class="tips-grid">
 
         <div class="tip-card tip-ps">
@@ -184,56 +233,9 @@
       </div>
     </section>
 
-    <!-- CLI Tips -->
-    <section class="content-section">
-      <h2 class="section-title"><span class="section-num" style="color:var(--accent-cmd);background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.2)">04</span> ONTAP CLI Tips</h2>
-      <div class="tips-grid">
-
-        <div class="tip-card tip-warn">
-          <div class="tip-label">CLI Tip</div>
-          <div class="tip-title">Use <code>-fields *</code> to discover available fields</div>
-          <div class="tip-body">
-            Not sure what fields a command supports? Run <code>volume show -fields ?</code> to see all
-            available field names for that object. Then narrow your query with only the fields you need.
-          </div>
-        </div>
-
-        <div class="tip-card tip-info">
-          <div class="tip-label">Efficiency</div>
-          <div class="tip-title">Use <code>set -privilege advanced</code> to unlock more commands</div>
-          <div class="tip-body">
-            Many diagnostic and low-level commands are hidden at the default privilege level. Use
-            <code>set -privilege advanced</code> to access them. Remember to return to
-            <code>set -privilege admin</code> when done to avoid accidental destructive changes.
-          </div>
-        </div>
-
-        <div class="tip-card tip-good">
-          <div class="tip-label">Shortcut</div>
-          <div class="tip-title">Tab completion and <code>?</code> work everywhere in ONTAP CLI</div>
-          <div class="tip-body">
-            Press Tab to auto-complete command names, flags, and even values like volume names or
-            vserver names. Append <code>?</code> to any partial command to see available options.
-            This alone saves significant time during operations.
-          </div>
-        </div>
-
-        <div class="tip-card tip-danger">
-          <div class="tip-label">Danger</div>
-          <div class="tip-title">Test destructive operations in ONTAP Simulator first</div>
-          <div class="tip-body">
-            Before running scripts that delete snapshots, move volumes, or break SnapMirror relationships
-            in production, test them in ONTAP Select or the ONTAP Simulator. Many operations are
-            irreversible or require lengthy recovery if run incorrectly.
-          </div>
-        </div>
-
-      </div>
-    </section>
-
     <!-- Quick Reference -->
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num">05</span> Quick Environment Checklist</h2>
+      <h2 class="section-title" id="quick-environment-checklist"><span class="section-num">05</span> Quick Environment Checklist</h2>
       <div class="code-block">
         <div class="code-header">
           <span class="code-lang">bash · pre-flight checklist</span>
@@ -256,7 +258,7 @@ echo "Open: https://&lt;cluster&gt;/docs/api"</code></pre>
       </div>
     </section>
 
-    <footer class="page-footer">NetApp Automation Hub · Tips & Tricks</footer>
+    <footer class="page-footer">NetApp Hub · Tips & Tricks</footer>
   </main>
 
   <script src="assets/js/search.js"></script>
