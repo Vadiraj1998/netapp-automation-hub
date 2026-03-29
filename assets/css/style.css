@@ -2167,7 +2167,7 @@ table tbody tr:hover {
     .sidebar-toggle {
       display: flex;
       position: fixed;
-      top: 70px;
+      top: 15px;
       left: 20px; /* Put it on the top right */
       background: var(--bg2);
       color: var(--text);
