@@ -1,14 +1,17 @@
 // ===== SIDEBAR TOGGLE =====
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.toggle('active');
 }
 
-// ===== CLOSE SIDEBAR ON OUTSIDE CLICK (mobile) =====
+// Close sidebar if user clicks outside of it on mobile
 document.addEventListener('click', (e) => {
-  const sidebar = document.getElementById('sidebar');
-  const toggleBtn = document.querySelector('.sidebar-toggle');
-  if (sidebar && toggleBtn && !sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
-    sidebar.classList.remove('open');
+  if (window.innerWidth <= 768) {
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.querySelector('.sidebar-toggle');
+    if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+      sidebar.classList.remove('active');
+    }
   }
 });
 
