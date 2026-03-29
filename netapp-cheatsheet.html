@@ -27,13 +27,19 @@
 </head>
 <body>
   <div class="noise"></div>
-
+   
+  <!-- Sidebar -->
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+      <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; cursor: pointer;">
         <span class="logo-icon">⬡</span>
         <span class="logo-text">NetApp<br><span class="logo-sub">Hub</span></span>
       </a>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="globalSearch" placeholder="Search docs..." oninput="liveSearch(this.value)" autocomplete="off"/>
+      <span class="search-icon">⌕</span>
+      <div id="searchResults" class="search-results"></div>
     </div>
 
     <ul class="nav-links">
@@ -41,7 +47,6 @@
       <li><a href="index.html"><span class="nav-icon">⌂</span> Home</a></li>
       <li><a href="get-started.html"><span class="nav-icon">🚀</span> Get Started</a></li>
       <li><a href="commands.html"><span class="nav-icon">⌨</span> Commands Reference</a></li>
-      <li><a href="cheatsheet.html" class="active"><span class="nav-icon">📋</span> Cheat Sheet</a></li>
       <li><a href="tips.html"><span class="nav-icon">💡</span> Tips & Tricks</a></li>
       <li><a href="python.html"><span class="nav-icon">🐍</span> Python Automation</a></li>
       <li><a href="powershell.html"><span class="nav-icon">⚡</span> PowerShell Automation</a></li>
@@ -61,19 +66,7 @@
       <p class="page-subtitle">Common CLI commands for daily storage administration, troubleshooting, and automation workflows.</p>
     </header>
 
-    <p class="cheat-intro">
-      This NetApp ONTAP cheat sheet gives storage engineers a quick reference for frequently used CLI commands across cluster management, volumes, aggregates, SVMs, networking, snapshots, export policies, health checks, and performance troubleshooting. Use the search and filter controls below to quickly find the command you need.
-    </p>
-
-    <div class="cheat-links">
-      <a href="commands.html">Full Commands Reference</a>
-      <a href="python.html">Python Automation</a>
-      <a href="powershell.html">PowerShell Automation</a>
-      <a href="tips.html">Tips & Best Practices</a>
-    </div>
-
     <section class="content-section">
-      <h2 class="section-title"><span class="section-num">01</span> Common NetApp ONTAP Commands</h2>
 
       <div class="cheat-toolbar">
         <input
@@ -87,7 +80,7 @@
           <option value="all">All Categories</option>
         </select>
 
-        <div class="result-count" id="resultCount">0 commands</div>
+        <div class="result-count" id="cheatCount">0 commands</div>
       </div>
 
       <div class="cheat-grid" id="cheatSheetContent"></div>
@@ -180,7 +173,7 @@
     const contentEl = document.getElementById('cheatSheetContent');
     const searchEl = document.getElementById('commandSearch');
     const filterEl = document.getElementById('categoryFilter');
-    const countEl = document.getElementById('resultCount');
+    const countEl = document.getElementById('cheatCount');
     const noResultsEl = document.getElementById('noResults');
 
     function escapeHtml(text) {

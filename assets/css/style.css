@@ -2431,14 +2431,19 @@ html, body {
 
 .cheat-search,
 .cheat-filter {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.10);
-  color: var(--text);
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  color: var(--text-bright);
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 10px 16px;
   font-family: var(--font-mono);
   font-size: 13px;
   outline: none;
+}
+
+.cheat-filter option {
+  background: var(--bg2);
+  color: var(--text-bright);
 }
 
 .cheat-search::placeholder {
@@ -2447,8 +2452,8 @@ html, body {
 
 .cheat-search:focus,
 .cheat-filter:focus {
-  border-color: var(--accent-cmd);
-  box-shadow: 0 0 0 3px rgba(245,166,35,0.10);
+  border-color: var(--border);
+  box-shadow: none;
 }
 
 /* Mobile cleanup: override earlier conflicting blocks safely */
@@ -2503,69 +2508,50 @@ html, body {
     line-height: 1.6;
   }
 
-  .cards-grid,
-  .feature-grid,
-  .expertise-grid,
-  .philosophy-cards,
-  .cheat-grid {
-    grid-template-columns: 1fr;
-  }
+  /* Cheat sheet */
+  /* ===== CHEATSHEET FIXES ===== */
 
-  .info-grid,
-  .hero-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .code-block {
-    margin: 16px 0;
-    border-radius: 10px;
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-  }
-
-  pre {
-    padding: 16px;
+  .cheat-intro {
+    margin-bottom: 34px;  /* already there */
+    margin-top: 24px;     /* ADD THIS */
   }
 
   .cheat-toolbar {
-    flex-direction: column;
-    align-items: stretch;
+    margin-top: 12px;
+    margin-bottom: 36px;  /* increase from 28px */
   }
 
-  .cheat-search,
-  .cheat-filter {
-    width: 100%;
-    flex: 1 1 auto;
-  }
-
-  .result-count {
-    width: 100%;
-    text-align: center;
-  }
-
-  .cmd-row {
-    flex-direction: column;
-  }
-
-  .copy-command-btn {
-    width: fit-content;
-  }
-
-  .hero-section {
-    margin: 0 0 32px 0;
-    padding: 36px 18px;
-    border-radius: 16px;
-  }
-
-  .connect-links,
-  .hero-cta {
-    flex-direction: column;
-  }
-
-  .btn,
-  .connect-link {
-    width: 100%;
-    justify-content: center;
-  }
+.cheat-filter-wrap {
+  position: relative;
+  display: inline-block;
 }
 
+.cheat-filter {
+  background: var(--bg2);
+  border: 1px solid var(--accent-cmd);
+  color: var(--text-bright);
+  border-radius: 10px;
+  padding: 12px 40px 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.cheat-filter-wrap::after {
+  content: "▾";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-bright);
+  pointer-events: none;
+  font-size: 14px;
+}
+
+.cheat-filter option {
+  background: var(--bg2);
+  color: var(--text-bright);
+}
