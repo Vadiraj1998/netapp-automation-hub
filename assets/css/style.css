@@ -1323,12 +1323,14 @@ table tbody tr:hover {
   border: none;
   cursor: pointer;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   font-size: 15px;
   font-weight: 600;
   color: var(--text);
   transition: background 0.2s ease;
+  text-align: left;
+  gap: 12px;
 }
 
 .faq-question:hover {
@@ -1338,6 +1340,8 @@ table tbody tr:hover {
 .faq-question i {
   transition: transform 0.3s ease;
   color: var(--accent-cmd);
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
 .faq-answer {
