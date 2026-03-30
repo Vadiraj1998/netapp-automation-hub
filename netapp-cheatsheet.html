@@ -150,12 +150,11 @@
         { category: "Export Policy", command: "vserver export-policy rule modify", description: "Modify an export policy rule." },
         { category: "Export Policy", command: "vserver export-policy rule delete", description: "Delete an export policy rule." },
 
-        { category: "Protocols", command: "vserver cifs show", description: "Show CIFS server configuration." },
-        { category: "Protocols", command: "vserver cifs create", description: "Create a CIFS server." },
-        { category: "Protocols", command: "vserver nfs show", description: "Show NFS configuration." },
-        { category: "Protocols", command: "vserver nfs modify", description: "Modify NFS configuration." },
-        { category: "Protocols", command: "lun show", description: "Display LUN information." },
-        { category: "Protocols", command: "igroup show", description: "Show initiator groups." },
+        { category: "NFS", command: "vserver nfs show", description: "Show NFS configuration." },
+        { category: "NFS", command: "vserver nfs modify", description: "Modify NFS configuration." },
+
+        { category: "ISCSI-SAN", command: "lun show", description: "Display LUN information." },
+        { category: "ISCSI-SAN", command: "igroup show", description: "Show initiator groups." },
 
         { category: "Disk", command: "storage disk show", description: "Show disk inventory." },
         { category: "Disk", command: "storage disk assign", description: "Assign a disk to a node." },
@@ -198,6 +197,8 @@
         { category: "Upgrade", command: "system node image update", description: "Update the cluster" },
         { category: "Upgrade", command: "system node image show-update-progress", description: "Show the update progress." },
         
+        { category: "CIFS", command: "vserver cifs show", description: "Show CIFS server configuration." },
+        { category: "CIFS", command: "vserver cifs create", description: "Create a CIFS server." },
         { category: "CIFS", command: "cifs show", description: "Show all cifs servers." },
         { category: "CIFS", command: "cifs share show", description: "Show all cifs shares." },
         { category: "CIFS", command: "cifs session show", description: "Show all cifs sessions." },
