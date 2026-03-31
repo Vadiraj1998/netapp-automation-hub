@@ -289,6 +289,64 @@ response = requests.post(...)
       <a href="../blog-community.html" class="post-back-btn">← Back to Blog</a>
     </div>
 
+    <!-- ===== ENGAGEMENT SECTION =====
+    Add this INSIDE <main>, just before <div id="footer-container"></div>
+    on every post page (posts/20241215-snapmirror-failover.html etc.)
+    -->
+
+    <!-- Like / Dislike -->
+    <div class="engagement-section">
+
+      <div class="vote-bar">
+        <span class="vote-label">Was this helpful?</span>
+        <button class="vote-btn" id="likeBtn" title="Helpful">
+          👍 <span id="likeCount">0</span>
+        </button>
+        <button class="vote-btn" id="dislikeBtn" title="Not helpful">
+          👎 <span id="dislikeCount">0</span>
+        </button>
+      </div>
+
+      <!-- Comments -->
+      <div class="comments-section">
+        <h3 class="comments-title">Comments</h3>
+
+        <!-- Existing comments -->
+        <div id="commentsList"></div>
+
+        <!-- Submit form -->
+        <form id="commentForm" class="comment-form">
+          <h4 class="comment-form-title">Leave a Comment</h4>
+          <div class="comment-form-row">
+            <input
+              type="text"
+              id="commentName"
+              placeholder="Your name or handle"
+              maxlength="60"
+              required
+            />
+          </div>
+          <div class="comment-form-row">
+            <textarea
+              id="commentText"
+              placeholder="Share your thoughts, questions, or suggestions..."
+              rows="4"
+              maxlength="1000"
+              required
+            ></textarea>
+          </div>
+          <div class="comment-form-footer">
+            <span class="comment-moderation-note">💬 Comments are reviewed before appearing.</span>
+            <button type="submit" id="commentSubmitBtn" class="btn btn-primary">Post Comment</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Firebase Engagement Script -->
+    <script type="module" src="../assets/js/blog-engagement.js"></script>
+
     <div id="footer-container"></div>
   </main>
 
