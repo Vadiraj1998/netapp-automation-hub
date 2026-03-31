@@ -95,7 +95,6 @@
             <p>Got a story? Send us your post and we'll feature it!</p>
             <button class="btn btn-primary" onclick="openSubmitForm()">Submit a Post</button>
           </div>
-          <div class="submit-post-icon">📧</div>
         </div>
     </section>
 
@@ -146,8 +145,8 @@
             <small>Max 2MB. Recommended: 800x400px</small>
           </div>
           <div class="form-group">
-            <label style="display: flex; align-items: center; gap: 8px; text-transform: none; letter-spacing: 0; font-size: 13px;">
-              <input type="checkbox" name="agree" required/>
+            <label class="checkbox-label">
+              <input type="checkbox" name="agree" required />
               <span>I agree to have my article published with my name credited</span>
             </label>
           </div>
@@ -317,10 +316,12 @@
 
     function openSubmitForm() {
       document.getElementById('submitFormModal').style.display = 'flex';
+      document.body.classList.add('modal-open');
     }
 
     function closeSubmitForm() {
       document.getElementById('submitFormModal').style.display = 'none';
+      document.body.classList.remove('modal-open');
     }
 
     async function handlePostSubmit(event) {
