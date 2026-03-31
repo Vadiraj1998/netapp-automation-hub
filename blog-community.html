@@ -103,7 +103,12 @@
       <div class="modal-content">
         <button class="modal-close" onclick="closeSubmitForm()">✕</button>
         <h2 style="margin-bottom: 24px; color: var(--text-bright);">Submit Your Blog Post</h2>
-        <form id="submitPostForm" action="https://formspree.io/f/mwvwlrrj" method="POST" onsubmit="handlePostSubmit(event)">
+        <form 
+          id="submitPostForm" 
+          action="https://formspree.io/f/mwvwlrrj" 
+          method="POST" 
+          onsubmit="handlePostSubmit(event)"
+        >
           <div class="form-group">
             <label for="postTitle">Post Title *</label>
             <input type="text" id="postTitle" name="title" required placeholder="e.g., Automating Volume Creation"/>
