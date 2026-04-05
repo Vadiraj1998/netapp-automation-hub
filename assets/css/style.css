@@ -738,6 +738,12 @@ mark {
 
 /* ===== COMMAND TABLE ENHANCEMENTS ===== */
 
+#commandsCategoryFilters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .cmd-table-wrapper {
   width: 100%;
   overflow-x: auto;
