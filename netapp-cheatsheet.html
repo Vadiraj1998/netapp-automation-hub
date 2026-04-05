@@ -39,26 +39,22 @@
     </header>
 
     <section class="content-section">
-
-      <div class="cheat-toolbar">
-        <input
-          id="commandSearch"
-          class="cheat-search"
-          type="text"
-          placeholder="Search commands, category, or description..."
-        />
-
-        <select id="categoryFilter" class="cheat-filter">
+      <div class="cmd-filter-bar">
+        <input type="text" id="cheatFilter" placeholder="Filter commands..." />
+        <select id="cheatCategory">
           <option value="all">All Categories</option>
+          <option value="Volume">Volume</option>
+          <option value="Snapshot">Snapshot</option>
+          <option value="Network">Network</option>
+          <option value="SVM">SVM</option>
+          <option value="Diagnostics">Diagnostics</option>
         </select>
-
-        <div class="result-count" id="cheatCount">0 commands</div>
+        <span class="result-count" id="cheatResultCount">0 commands</span>
       </div>
-
-      <div class="cheat-grid" id="cheatSheetContent"></div>
-      <div class="no-results" id="noResults">No commands found for the current search or filter.</div>
+    
+      <div class="cheat-grid" id="cheatGrid"></div>
     </section>
-
+    
     <div id="footer-container"></div>
   </main>
 
@@ -71,13 +67,23 @@
     function renderCheatSheet(commands) {
       const cheatGrid = document.getElementById('cheatGrid');
       const cheatResultCount = document.getElementById('cheatResultCount');
-      if (!cheatGrid) return;
+      const cheatFilter = document.getElementById('cheatFilter');
+      const cheatCategory = document.getElementById('cheatCategory');
   
-      const filterValue = (document.getElementById('cheatFilter')?.value || '').toLowerCase();
+      if (!cheatGrid || !cheatResultCount) return;
+  
+      const filterValue = (cheatFilter?.value || '').toLowerCase().trim();
+      const selectedCategory = cheatCategory?.value || 'all';
   
       const filtered = commands.filter(cmd => {
-        const text = `${cmd.name} ${cmd.description} ${cmd.tag}`.toLowerCase();
-        return text.includes(filterValue);
+        const matchesText = `${cmd.name} ${cmd.description} ${cmd.tag} ${cmd.category}`
+          .toLowerCase()
+          .includes(filterValue);
+  
+        const matchesCategory =
+          selectedCategory === 'all' || cmd.tag === selectedCategory;
+  
+        return matchesText && matchesCategory;
       });
   
       cheatResultCount.textContent = `${filtered.length} command${filtered.length !== 1 ? 's' : ''}`;
@@ -89,6 +95,7 @@
       });
   
       let html = '';
+  
       Object.keys(grouped).sort().forEach(groupName => {
         html += `
           <div class="cheat-card">
@@ -103,17 +110,31 @@
         `;
       });
   
-      cheatGrid.innerHTML = html || '<p style="color: var(--text-dim);">No commands found.</p>';
+      cheatGrid.innerHTML = html || '<p style="color: var(--text-dim);">No commands found for the current filter.</p>';
     }
   
     document.addEventListener('DOMContentLoaded', () => {
       try {
-        const data = getCommandsDataSync();
-        renderCheatSheet(data.commands);
+        if (!window.COMMANDS_DATA || !Array.isArray(window.COMMANDS_DATA.commands)) {
+          throw new Error('COMMANDS_DATA not loaded');
+        }
   
-        const filter = document.getElementById('cheatFilter');
-        if (filter) {
-          filter.addEventListener('input', () => renderCheatSheet(data.commands));
+        const commands = [...window.COMMANDS_DATA.commands].sort((a, b) => {
+          if (a.tag !== b.tag) return a.tag.localeCompare(b.tag);
+          return a.name.localeCompare(b.name);
+        });
+  
+        renderCheatSheet(commands);
+  
+        const cheatFilter = document.getElementById('cheatFilter');
+        const cheatCategory = document.getElementById('cheatCategory');
+  
+        if (cheatFilter) {
+          cheatFilter.addEventListener('input', () => renderCheatSheet(commands));
+        }
+  
+        if (cheatCategory) {
+          cheatCategory.addEventListener('change', () => renderCheatSheet(commands));
         }
       } catch (error) {
         console.error('Failed to load cheat sheet:', error);
