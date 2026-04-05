@@ -1,20 +1,41 @@
 // ===== LOAD COMMANDS FROM JSON =====
 let commandsData = [];
 
-async function loadCommandsData() {
+function getCommandsDataSync() {
+  if (window.COMMANDS_DATA && Array.isArray(window.COMMANDS_DATA.commands)) {
+    return window.COMMANDS_DATA;
+  }
+  throw new Error("COMMANDS_DATA not loaded");
+}
+
+async function getCommandsData() {
   try {
     const response = await fetch('assets/data/commands.json');
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const data = await response.json();
-    
-    // Sort by command name first, then by category
+    return await response.json();
+  } catch (error) {
+    console.warn('Fetch failed for commands.json, using inline fallback:', error);
+
+    const inline = document.getElementById('commandsDataInline');
+    if (!inline) {
+      throw new Error('Inline commands fallback not found');
+    }
+
+    return JSON.parse(inline.textContent);
+  }
+}
+
+async function loadCommandsData() {
+  try {
+    const data = getCommandsDataSync();
+
     commandsData = data.commands.sort((a, b) => {
       if (a.name !== b.name) {
         return a.name.localeCompare(b.name);
       }
       return a.category.localeCompare(b.category);
     });
-    
+
     populateTable(commandsData);
     updateResultCount(commandsData.length);
   } catch (error) {
@@ -117,11 +138,8 @@ let SEARCH_INDEX = [
 // ===== LOAD COMMANDS INTO SEARCH INDEX =====
 async function loadCommandsIntoSearchIndex() {
   try {
-    const response = await fetch('assets/data/commands.json');
-    if (!response.ok) return;
-    const data = await response.json();
-    
-    // Add each command to SEARCH_INDEX
+    const data = getCommandsDataSync();
+
     data.commands.forEach(cmd => {
       SEARCH_INDEX.push({
         title: cmd.name,

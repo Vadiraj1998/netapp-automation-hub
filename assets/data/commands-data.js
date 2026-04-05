@@ -1,0 +1,140 @@
+window.COMMANDS_DATA = {
+    commands: [
+      {
+        "id": "vol-show",
+        "name": "volume show",
+        "description": "Display volumes with state and usage",
+        "example": "volume show -fields name,size,state,space-used",
+        "category": "vol",
+        "tag": "Volume"
+      },
+      {
+        "id": "vol-create",
+        "name": "volume create",
+        "description": "Create a new FlexVol",
+        "example": "volume create -vserver svm0 -volume vol1 -aggregate aggr1 -size 10g",
+        "category": "vol",
+        "tag": "Volume"
+      },
+      {
+        "id": "vol-delete",
+        "name": "volume delete",
+        "description": "Delete a volume",
+        "example": "volume delete -vserver svm0 -volume vol1",
+        "category": "vol",
+        "tag": "Volume"
+      },
+      {
+        "id": "vol-move",
+        "name": "volume move",
+        "description": "Move volume to another aggregate",
+        "example": "volume move -vserver svm0 -volume vol1 -destination-aggregate aggr2",
+        "category": "vol",
+        "tag": "Volume"
+      },
+      {
+        "id": "snap-create",
+        "name": "volume snapshot create",
+        "description": "Create a snapshot",
+        "example": "volume snapshot create -vserver svm0 -volume vol1 -snapshot backup_001",
+        "category": "snap",
+        "tag": "Snapshot"
+      },
+      {
+        "id": "snap-restore",
+        "name": "volume snapshot restore-file",
+        "description": "Restore file from snapshot",
+        "example": "volume snapshot restore-file -vserver svm0 -volume vol1 -snapshot snap1 -path /myfile.txt",
+        "category": "snap",
+        "tag": "Snapshot"
+      },
+      {
+        "id": "snap-delete",
+        "name": "volume snapshot delete",
+        "description": "Delete a snapshot",
+        "example": "volume snapshot delete -vserver svm0 -volume vol1 -snapshot snap1",
+        "category": "snap",
+        "tag": "Snapshot"
+      },
+      {
+        "id": "net-port-show",
+        "name": "network port show",
+        "description": "Show network ports",
+        "example": "network port show -fields port,link,speed,health-status",
+        "category": "net",
+        "tag": "Network"
+      },
+      {
+        "id": "net-int-show",
+        "name": "network interface show",
+        "description": "Show LIFs",
+        "example": "network interface show -fields vserver,lif,address,status",
+        "category": "net",
+        "tag": "Network"
+      },
+      {
+        "id": "svm-show",
+        "name": "vserver show",
+        "description": "Show all SVMs",
+        "example": "vserver show -fields vserver,state,root-volume",
+        "category": "svm",
+        "tag": "SVM"
+      },
+      {
+        "id": "svm-create",
+        "name": "vserver create",
+        "description": "Create new SVM",
+        "example": "vserver create -vserver svm_prod -rootvolume root_svm_prod -aggregate aggr1",
+        "category": "svm",
+        "tag": "SVM"
+      },
+      {
+        "id": "node-show",
+        "name": "system node show",
+        "description": "Show cluster nodes",
+        "example": "system node show -fields node,health,model,version",
+        "category": "diag",
+        "tag": "Diagnostics"
+      },
+      {
+        "id": "cluster-show",
+        "name": "cluster show",
+        "description": "Show cluster info",
+        "example": "cluster show -fields cluster-name,node-count,version",
+        "category": "diag",
+        "tag": "Diagnostics"
+      },
+      {
+        "id": "agg-show",
+        "name": "storage aggregate show",
+        "description": "Show aggregates",
+        "example": "storage aggregate show -fields aggregate,state,size,used",
+        "category": "diag",
+        "tag": "Diagnostics"
+      },
+      {
+        "id": "snap-list",
+        "name": "volume snapshot show",
+        "description": "List snapshots",
+        "example": "volume snapshot show -vserver svm0 -volume vol1",
+        "category": "snap",
+        "tag": "Snapshot"
+      },
+      {
+        "id": "sm-show",
+        "name": "snapmirror show",
+        "description": "Show SnapMirror status",
+        "example": "snapmirror show -destination-path svm_dst:vol_dst",
+        "category": "snap",
+        "tag": "Snapshot"
+      },
+      {
+        "id": "export-vol",
+        "name": "volume export-policy rule show",
+        "description": "Show export policies",
+        "example": "volume export-policy rule show -vserver svm0",
+        "category": "net",
+        "tag": "Network"
+      }
+    ]
+  };

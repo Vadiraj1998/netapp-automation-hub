@@ -64,270 +64,64 @@
 
   <script src="assets/js/sidebar-loader.js"></script>
   <script src="assets/js/utils.js"></script>
+  <script src="assets/data/commands-data.js"></script>
   <script src="assets/js/search.js"></script>
 
   <script>
-    const commandData = [
-        { category: "Cluster", command: "cluster show", description: "Show cluster information." },
-        { category: "Cluster", command: "cluster identity show", description: "Display cluster identity details." },
-        { category: "Cluster", command: "version", description: "Show current ONTAP version." },
-        { category: "Cluster", command: "system node show", description: "List nodes in the cluster." },
-        { category: "Cluster", command: "system node run -node <node>", description: "Run node shell commands on a specific node." },
-
-        { category: "Volume", command: "volume show", description: "Display all volumes." },
-        { category: "Volume", command: "volume show-space", description: "Show space usage for volumes." },
-        { category: "Volume", command: "volume create -vserver <svm> -volume <name> -aggregate <aggr> -size <size>", description: "Create a new volume." },
-        { category: "Volume", command: "volume delete -vserver <svm> -volume <name>", description: "Delete a volume." },
-        { category: "Volume", command: "volume offline -vserver <svm> -volume <name>", description: "Take a volume offline." },
-        { category: "Volume", command: "volume online -vserver <svm> -volume <name>", description: "Bring a volume online." },
-        { category: "Volume", command: "volume modify -vserver <svm> -volume <name>", description: "Modify volume configuration." },
-        { category: "Volume", command: "volume size -vserver <svm> -volume <name> -new-size <size>", description: "Resize a volume." },
-        { category: "Volume", command: "volume efficiency show", description: "Show volume efficiency status." },
-        { category: "Volume", command: "volume efficiency start -vserver <svm> -volume <name>", description: "Start efficiency operation." },
-
-        { category: "Aggregate", command: "storage aggregate show", description: "Show all aggregates." },
-        { category: "Aggregate", command: "storage aggregate show-status", description: "Display aggregate status." },
-        { category: "Aggregate", command: "storage aggregate create", description: "Create an aggregate." },
-        { category: "Aggregate", command: "storage aggregate add-disks", description: "Add disks to an aggregate." },
-        { category: "Aggregate", command: "storage aggregate online", description: "Bring an aggregate online." },
-        { category: "Aggregate", command: "storage aggregate offline", description: "Take an aggregate offline." },
-        
-        { category: "Peer", command: "cluster peer show", description: "List all cluster peers." },
-        { category: "Peer", command: "vserver peer show", description: "List all SVM peers." },
-
-        { category: "SVM", command: "vserver show", description: "List all SVMs." },
-        { category: "SVM", command: "vserver create", description: "Create a new SVM." },
-        { category: "SVM", command: "vserver modify", description: "Modify SVM settings." },
-        { category: "SVM", command: "vserver delete", description: "Delete an SVM." },
-
-        { category: "Network", command: "network interface show", description: "Show all LIFs." },
-        { category: "Network", command: "network interface create", description: "Create a new LIF." },
-        { category: "Network", command: "network interface modify", description: "Modify a LIF." },
-        { category: "Network", command: "network interface migrate", description: "Migrate a LIF to another port." },
-        { category: "Network", command: "network interface revert", description: "Revert a LIF to its home port." },
-        { category: "Network", command: "network port show", description: "Show network ports." },
-        { category: "Network", command: "network port ifgrp show", description: "Show interface groups." },
-        { category: "Network", command: "network route show", description: "Display configured routes." },
-        { category: "Network", command: "network device-discovery show", description: "Show all the connected network devices." },
-
-        { category: "Snapshot", command: "snapshot show", description: "List snapshots." },
-        { category: "Snapshot", command: "snapshot create -vserver <svm> -volume <name> -snapshot <snap>", description: "Create a snapshot." },
-        { category: "Snapshot", command: "snapshot delete -vserver <svm> -volume <name> -snapshot <snap>", description: "Delete a snapshot." },
-        { category: "Snapshot", command: "snapshot restore", description: "Restore from a snapshot." },
-        { category: "Snapshot", command: "volume snapshot policy show", description: "Show snapshot policies." },
-
-        { category: "Export Policy", command: "vserver export-policy show", description: "Show export policies." },
-        { category: "Export Policy", command: "vserver export-policy create", description: "Create an export policy." },
-        { category: "Export Policy", command: "vserver export-policy rule show", description: "Show export policy rules." },
-        { category: "Export Policy", command: "vserver export-policy rule create", description: "Create an export policy rule." },
-        { category: "Export Policy", command: "vserver export-policy rule modify", description: "Modify an export policy rule." },
-        { category: "Export Policy", command: "vserver export-policy rule delete", description: "Delete an export policy rule." },
-
-        { category: "NFS", command: "vserver nfs show", description: "Show NFS configuration." },
-        { category: "NFS", command: "vserver nfs modify", description: "Modify NFS configuration." },
-
-        { category: "ISCSI-SAN", command: "lun show", description: "Display LUN information." },
-        { category: "ISCSI-SAN", command: "igroup show", description: "Show initiator groups." },
-        { category: "ISCSI-SAN", command: "lun create -vserver <svm> -path <path> -size <size> -ostype <type>", description: "Create a LUN." },
-        { category: "ISCSI-SAN", command: "lun delete -vserver <svm> -path <path>", description: "Delete a LUN." },
-        { category: "ISCSI-SAN", command: "lun show -fields path,serial,space-reserve", description: "Show LUN details with important fields." },
-        { category: "ISCSI-SAN", command: "lun map -vserver <svm> -path <path> -igroup <igroup>", description: "Map LUN to initiator group." },
-        { category: "ISCSI-SAN", command: "lun unmap -vserver <svm> -path <path> -igroup <igroup>", description: "Unmap LUN from igroup." },
-        { category: "ISCSI-SAN", command: "lun modify -vserver <svm> -path <path>", description: "Modify LUN properties." },
-        { category: "ISCSI-SAN", command: "lun resize -vserver <svm> -path <path> -size <new-size>", description: "Resize LUN." },
-        { category: "ISCSI-SAN", command: "igroup create -vserver <svm> -igroup <name> -protocol <iscsi|fcp> -ostype <type>", description: "Create an initiator group." },
-        { category: "ISCSI-SAN", command: "igroup add -vserver <svm> -igroup <name> -initiator <iqn/wwpn>", description: "Add initiator to igroup." },
-        { category: "ISCSI-SAN", command: "igroup remove -vserver <svm> -igroup <name> -initiator <iqn/wwpn>", description: "Remove initiator from igroup." },
-        { category: "ISCSI-SAN", command: "igroup show -instance", description: "Detailed igroup info." },
-        { category: "ISCSI-SAN", command: "iscsi show", description: "Show iSCSI service status." },
-        { category: "ISCSI-SAN", command: "iscsi connection show", description: "Show active iSCSI sessions." },
-        { category: "ISCSI-SAN", command: "iscsi interface show", description: "Show iSCSI interfaces." },  
-        { category: "ISCSI-SAN", command: "fcp show", description: "Show FCP service status." },
-        { category: "ISCSI-SAN", command: "fcp adapter show", description: "Show FCP adapters." },
-        { category: "ISCSI-SAN", command: "fcp initiator show", description: "Show FCP initiators." },
-
-        { category: "Disk", command: "storage disk show", description: "Show disk inventory." },
-        { category: "Disk", command: "storage disk assign", description: "Assign a disk to a node." },
-        { category: "Disk", command: "storage disk zero spares", description: "Zero spare disks." },
-
-        { category: "Health", command: "system health status show", description: "Show system health status." },
-        { category: "Health", command: "system health subsystem show", description: "Show subsystem health status." },
-        { category: "Health", command: "system health system-connectivity shelf show", description: "Diag: Shows system connectivity with the shelf." },
-        { category: "Health", command: "system health node-connectivity shelf show", description: "Diag: Shows each node connectivity with the shelf." },
-        { category: "Health", command: "system health node-connectivity disk show", description: "Diag: Shows each node connectivity with the all connected disks." },
-        { category: "Health", command: "system health node-connectivity adapter show", description: "Diag: Shows each node connectivity with the adapters, i.e., 0a, 0b..." },
-        { category: "Health", command: "system controller environment show", description: "List all components details." },
-        { category: "Health", command: "event log show", description: "Display event log entries." },
-        { category: "Health", command: "cluster ring show", description: "Check cluster ring health." },
-
-        { category: "Performance", command: "statistics show", description: "Show performance counters." },
-        { category: "Performance", command: "statistics start", description: "Start statistics collection." },
-        { category: "Performance", command: "statistics stop", description: "Stop statistics collection." },
-        { category: "Performance", command: "qos statistics volume latency show", description: "View volume latency statistics." },
-        { category: "Performance", command: "qos policy-group show", description: "Show QoS policies." },
-        { category: "Performance", command: "qos policy-group show -instance", description: "Detailed QoS config." },
-
-        { category: "Security", command: "security login show", description: "Show configured login accounts." },
-        { category: "Security", command: "security certificate show", description: "Show installed certificates." },
-        { category: "Security", command: "security audit log show", description: "Display audit logs." },
-        
-        { category: "Snapmirror", command: "snapmirror show", description: "Show all snapmirror relationships." },
-        { category: "Snapmirror", command: "snapmirror show -state broken-off", description: "Show all broken snapmirror relationships." },
-        { category: "Snapmirror", command: "snapmirror list-destinations", description: "Show all snapmirror relationships from the source end." },
-        { category: "Snapmirror", command: "snapmirror create -S <source-path> -destination-path <destination-path> -{additional-parameters}", description: "Create a snapmirror relationship" },
-        { category: "Snapmirror", command: "snapmirror initialize -S <source-path> -destination-path <destination-path>", description: "Initialize a snapmirror relationship" },
-        { category: "Snapmirror", command: "snapmirror update -S <source-path> -destination-path <destination-path>", description: "Update a snapmirror relationship" },
-        { category: "Snapmirror", command: "snapmirror quiesce -S <source-path> -destination-path <destination-path>", description: "Pause a snapmirror relationship" },
-        { category: "Snapmirror", command: "snapmirror resume -S <source-path> -destination-path <destination-path>", description: "Resume a snapmirror relationship" },
-        { category: "Snapmirror", command: "snapmirror release -S <source-path> -destination-path <destination-path>", description: "Release a snapmirror relationship" },
-        { category: "Snapmirror", command: "snapmirror delete -S <source-path> -destination-path <destination-path>", description: "Delete a snapmirror relationship" },
-        { category: "Snapmirror", command: "snapmirror resync -S <source-path> -destination-path <destination-path>", description: "Resync a snapmirror relationship" },
-        { category: "Snapmirror", command: "snapmirror break -destination-path <dest>", description: "Break snapmirror for failover." },
-        { category: "Snapmirror", command: "snapmirror show -fields status,lag-time", description: "Check lag and status." },
-        { category: "Snapmirror", command: "snapmirror abort -destination-path <dest>", description: "Abort ongoing transfer." },
-          
-        { category: "Upgrade", command: "system node image package show", description: "Diag: List the images available in the cluster." },
-        { category: "Upgrade", command: "system node image package delete", description: "Diag: Delete the images available in the cluster." },
-        { category: "Upgrade", command: "system node image update", description: "Update the cluster" },
-        { category: "Upgrade", command: "system node image show-update-progress", description: "Show the update progress." },
-        
-        { category: "CIFS", command: "vserver cifs show", description: "Show CIFS server configuration." },
-        { category: "CIFS", command: "vserver cifs create", description: "Create a CIFS server." },
-        { category: "CIFS", command: "cifs show", description: "Show all cifs servers." },
-        { category: "CIFS", command: "cifs share show", description: "Show all cifs shares." },
-        { category: "CIFS", command: "cifs session show", description: "Show all cifs sessions." },
-
-        { category: "Name-Mapping", command: "vserver name-mapping show", description: "Show all name-mappings." },
-        { category: "Name-Mapping", command: "vserver name-mapping create", description: "Create a new name-mapping." },
-        { category: "Name-Mapping", command: "vserver name-mapping insert", description: "Insert a new name-mapping at a specific position." },
-        { category: "Name-Mapping", command: "vserver name-mapping modify", description: "Modify an existing name-mapping." },
-        { category: "Name-Mapping", command: "vserver name-mapping delete", description: "Delete an existing name-mapping." },
-
-        { category: "Event", command: "event log show", description: "Display all event logs." },
-        { category: "Event", command: "event log show -severity <ERROR|WARNING|NOTICE>", description: "Show events based on the parameter you provide." },
-        { category: "Event", command: "event log show -time >1h", description: "Show events from last 1 hour." },
-        { category: "Event", command: "event log show -time >1d", description: "Show events from last 1 day." },
-        { category: "Event", command: "event log show -node <node>", description: "Filter events by node." },
-        { category: "Event", command: "event log show -message-name <msg>", description: "Filter by EMS message name." },
-        { category: "Event", command: "event catalog show", description: "List all EMS message definitions." },
-        { category: "Event", command: "event notification show", description: "Show event notification configuration." },
-        { category: "Event", command: "event notification destination show", description: "Show EMS destinations (email/snmp)." },
-        { category: "Event", command: "event notification create", description: "Create event notification rule." },
-        { category: "Event", command: "event notification modify", description: "Modify event notification rule." },
-        { category: "Event", command: "event notification delete", description: "Delete event notification rule." },
-        { category: "Event", command: "event notification destination create -type email", description: "Create email notification destination." },
-        { category: "Event", command: "event notification destination modify", description: "Modify notification destination." },
-        { category: "Event", command: "event notification destination create -type snmp", description: "Create SNMP trap destination." },
-    ];
-
-    const contentEl = document.getElementById('cheatSheetContent');
-    const searchEl = document.getElementById('commandSearch');
-    const filterEl = document.getElementById('categoryFilter');
-    const countEl = document.getElementById('cheatCount');
-    const noResultsEl = document.getElementById('noResults');
-
-    function escapeHtml(text) {
-      return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-    }
-
-    function highlightText(text, query) {
-      if (!query) return escapeHtml(text);
-      const escaped = escapeHtml(text);
-      const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      return escaped.replace(new RegExp(`(${safeQuery})`, 'ig'), '<mark>$1</mark>');
-    }
-
-    function populateCategories() {
-      const categories = [...new Set(commandData.map(item => item.category))].sort();
-      categories.forEach(category => {
-        const option = document.createElement('option');
-        option.value = category;
-        option.textContent = category;
-        filterEl.appendChild(option);
+    function renderCheatSheet(commands) {
+      const cheatGrid = document.getElementById('cheatGrid');
+      const cheatResultCount = document.getElementById('cheatResultCount');
+      if (!cheatGrid) return;
+  
+      const filterValue = (document.getElementById('cheatFilter')?.value || '').toLowerCase();
+  
+      const filtered = commands.filter(cmd => {
+        const text = `${cmd.name} ${cmd.description} ${cmd.tag}`.toLowerCase();
+        return text.includes(filterValue);
       });
-    }
-
-    function filteredCommands() {
-      const query = searchEl.value.trim().toLowerCase();
-      const category = filterEl.value;
-
-      return commandData.filter(item => {
-        const matchesCategory = category === 'all' || item.category === category;
-        const haystack = `${item.category} ${item.command} ${item.description}`.toLowerCase();
-        const matchesQuery = !query || haystack.includes(query);
-        return matchesCategory && matchesQuery;
+  
+      cheatResultCount.textContent = `${filtered.length} command${filtered.length !== 1 ? 's' : ''}`;
+  
+      const grouped = {};
+      filtered.forEach(cmd => {
+        if (!grouped[cmd.tag]) grouped[cmd.tag] = [];
+        grouped[cmd.tag].push(cmd);
       });
-    }
-
-    function renderCheatSheet() {
-      const query = searchEl.value.trim();
-      const filtered = filteredCommands();
-
-      countEl.textContent = `${filtered.length} command${filtered.length === 1 ? '' : 's'}`;
-
-      contentEl.innerHTML = '';
-      noResultsEl.style.display = filtered.length ? 'none' : 'block';
-
-      const grouped = filtered.reduce((acc, item) => {
-        if (!acc[item.category]) acc[item.category] = [];
-        acc[item.category].push(item);
-        return acc;
-      }, {});
-
-      Object.keys(grouped).sort().forEach(category => {
-        const card = document.createElement('div');
-        card.className = 'cheat-card';
-
-        const commandsHtml = grouped[category].map(item => `
-          <div class="cmd-item">
-            <div class="cmd-row">
-              <code class="cmd-code">${highlightText(item.command, query)}</code>
-              <button class="copy-command-btn" data-command="${encodeURIComponent(item.command)}" title="Copy command">Copy</button>
-            </div>
-            <span class="cmd-desc">${highlightText(item.description, query)}</span>
+  
+      let html = '';
+      Object.keys(grouped).sort().forEach(groupName => {
+        html += `
+          <div class="cheat-card">
+            <h3>${groupName}</h3>
+            ${grouped[groupName].map(cmd => `
+              <div class="cmd-item">
+                <code class="cmd-code">${cmd.name}</code>
+                <div class="cmd-desc">${cmd.description}</div>
+              </div>
+            `).join('')}
           </div>
-        `).join('');
-
-        card.innerHTML = `
-          <h3>
-            <span>${category}</span>
-            <span class="card-count">${grouped[category].length}</span>
-          </h3>
-          ${commandsHtml}
         `;
-
-        contentEl.appendChild(card);
       });
-
-      bindCopyButtons();
+  
+      cheatGrid.innerHTML = html || '<p style="color: var(--text-dim);">No commands found.</p>';
     }
-
-    function bindCopyButtons() {
-      document.querySelectorAll('.copy-command-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const command = decodeURIComponent(btn.dataset.command);
-          try {
-            await navigator.clipboard.writeText(command);
-            const oldText = btn.textContent;
-            btn.textContent = 'Copied';
-            setTimeout(() => btn.textContent = oldText, 1200);
-          } catch {
-            btn.textContent = 'Failed';
-            setTimeout(() => btn.textContent = 'Copy', 1200);
-          }
-        });
-      });
-    }
-
-    searchEl.addEventListener('input', renderCheatSheet);
-    filterEl.addEventListener('change', renderCheatSheet);
-
+  
     document.addEventListener('DOMContentLoaded', () => {
-      populateCategories();
-      renderCheatSheet();
+      try {
+        const data = getCommandsDataSync();
+        renderCheatSheet(data.commands);
+  
+        const filter = document.getElementById('cheatFilter');
+        if (filter) {
+          filter.addEventListener('input', () => renderCheatSheet(data.commands));
+        }
+      } catch (error) {
+        console.error('Failed to load cheat sheet:', error);
+        const cheatGrid = document.getElementById('cheatGrid');
+        if (cheatGrid) {
+          cheatGrid.innerHTML = '<p style="color:red;">Failed to load cheat sheet.</p>';
+        }
+      }
     });
   </script>
 </body>
