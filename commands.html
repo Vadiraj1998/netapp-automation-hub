@@ -36,13 +36,8 @@
         <div class="cmd-filter-bar">
           <a href="netapp-cheatsheet.html" class="btn btn-secondary" style="white-space: nowrap;">📋 Cheat Sheet</a>
           <input type="text" id="cmdFilter" placeholder="Filter commands..." oninput="filterTable(this.value, activeCategory)"/>
-          <span class="result-count" id="resultCount">32 commands</span>
-          <button class="filter-btn active" onclick="setCategory(null, this)">All</button>
-          <button class="filter-btn" onclick="setCategory('vol', this)">Volume</button>
-          <button class="filter-btn" onclick="setCategory('snap', this)">Snapshot</button>
-          <button class="filter-btn" onclick="setCategory('net', this)">Network</button>
-          <button class="filter-btn" onclick="setCategory('svm', this)">SVM</button>
-          <button class="filter-btn" onclick="setCategory('diag', this)">Diagnostics</button>
+          <span class="result-count" id="resultCount">Loading...</span>
+          <div id="commandsCategoryFilters"></div>
         </div>
         <table>
           <thead>
@@ -68,12 +63,5 @@
   <script src="assets/data/commands-data.js"></script>
   <script src="assets/js/search.js"></script>
 
-  <script>
-    // Init - load data and setup filters
-    document.addEventListener('DOMContentLoaded', () => {
-      loadCommandsData();
-      filterTable('', null);
-    });
-  </script>
 </body>
 </html>
