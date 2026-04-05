@@ -29,71 +29,97 @@ async function loadCommandsData() {
   try {
     const data = getCommandsDataSync();
 
-    commandsData = data.commands.sort((a, b) => {
-      if (a.name !== b.name) {
-        return a.name.localeCompare(b.name);
+    commandsData = (data.commands || []).filter(Boolean).sort((a, b) => {
+      const aName = a.name || '';
+      const bName = b.name || '';
+      if (aName !== bName) {
+        return aName.localeCompare(bName);
       }
-      return a.category.localeCompare(b.category);
+      return (a.category || '').localeCompare(b.category || '');
     });
 
-    populateTable(commandsData);
     updateResultCount(commandsData.length);
+    buildCommandsCategoryFilters(commandsData);
+    populateTable(commandsData);
   } catch (error) {
     console.error('Failed to load commands:', error);
     const tbody = document.getElementById('cmdTableBody');
+    const resultCount = document.getElementById('resultCount');
+
     if (tbody) {
       tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Failed to load commands. Check console.</td></tr>';
     }
+
+    if (resultCount) {
+      resultCount.textContent = 'Failed';
+    }
   }
+}
+
+let activeCategory = null;
+
+function buildCommandsCategoryFilters(commands) {
+  const container = document.getElementById('commandsCategoryFilters');
+  if (!container) return;
+
+  const categories = [...new Map(
+    commands.map(cmd => [cmd.category, cmd.tag])
+  ).entries()];
+
+  let html = `<button class="filter-btn active" data-category="">All</button>`;
+
+  categories.forEach(([category, tag]) => {
+    html += `<button class="filter-btn" data-category="${category}">${tag}</button>`;
+  });
+
+  container.innerHTML = html;
+
+  container.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const selected = btn.dataset.category || null;
+      setCategory(selected);
+    });
+  });
 }
 
 function populateTable(commands) {
   const tbody = document.getElementById('cmdTableBody');
   if (!tbody) return;
-  
-  // Group commands by category
-  const groupedByCategory = {};
-  commands.forEach(cmd => {
-    if (!groupedByCategory[cmd.category]) {
-      groupedByCategory[cmd.category] = [];
-    }
-    groupedByCategory[cmd.category].push(cmd);
-  });
-  
-  // Sort each category's commands by name
-  Object.keys(groupedByCategory).forEach(cat => {
-    groupedByCategory[cat].sort((a, b) => a.name.localeCompare(b.name));
-  });
-  
-  // Build HTML
+
   let html = '';
-  Object.keys(groupedByCategory).sort().forEach(category => {
-    const categoryCommands = groupedByCategory[category];
-    
-    categoryCommands.forEach((cmd) => {
-      html += `
-    <tr data-cat="${cmd.category}">
-      <td>
-        <span class="category-badge tag-${cmd.category}">${cmd.tag}</span>
-      </td>
-      <td>
-        <div class="cmd-cell">
-          <code>${cmd.name}</code>
-          <button class="copy-btn" onclick="copyToClipboard('${cmd.name.replace(/'/g, "\\'")}')">📋</button>
-        </div>
-      </td>
-      <td>${cmd.description}</td>
-      <td>
-        <div class="example-cell">
-          <code>${cmd.example.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>
-          <button class="copy-btn" onclick="copyToClipboard('${cmd.example.replace(/'/g, "\\'")}')">📋</button>
-        </div>
-      </td>
-    </tr>
-      `;
-    });
+
+  commands.forEach((cmd) => {
+    const safeCategory = cmd.category || 'misc';
+    const safeTag = cmd.tag || safeCategory;
+    const safeName = (cmd.name || '').trim();
+    const safeDescription = (cmd.description || '').trim();
+    const safeExample = (cmd.example || '—').trim();
+
+    html += `
+      <tr data-cat="${safeCategory}">
+        <td>
+          <span class="category-badge tag-${safeCategory}">${safeTag}</span>
+        </td>
+        <td>
+          <div class="cmd-cell">
+            <code>${safeName.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>
+            <button class="copy-btn" onclick="copyToClipboard('${safeName.replace(/'/g, "\\'")}')">📋</button>
+          </div>
+        </td>
+        <td>${safeDescription}</td>
+        <td>
+          <div class="example-cell">
+            <code>${safeExample.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>
+            <button class="copy-btn" onclick="copyToClipboard('${safeExample.replace(/'/g, "\\'")}')">📋</button>
+          </div>
+        </td>
+      </tr>
+    `;
   });
-  
+
   tbody.innerHTML = html;
   updateResultCount(commands.length);
   loadFavoriteStars();
@@ -344,56 +370,27 @@ const FAVORITES_KEY = 'ontap_cmd_favorites';
 let activeCategory = null;
 let showFavoritesOnly = false;
 
-function setCategory(category, buttonElement) {
+function setCategory(category) {
   activeCategory = category;
-  
-  // Update active button styling
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  buttonElement.classList.add('active');
-  
-  // Re-filter with current search text
   const filterInput = document.getElementById('cmdFilter');
-  if (filterInput) {
-    filterTable(filterInput.value, category);
-  }
+  const filterValue = filterInput ? filterInput.value : '';
+  filterTable(filterValue, activeCategory);
 }
 
-function filterTable(searchText, category) {
-  const rows = document.querySelectorAll('#cmdTableBody tr');
-  if (rows.length === 0) return;
-  
-  const searchLower = searchText.toLowerCase();
-  let visibleCount = 0;
-  
-  rows.forEach(row => {
-    const cmdCode = row.querySelector('td:nth-child(2) code');
-    const commandText = cmdCode ? cmdCode.textContent : '';
-    
-    const categoryMatch = !category || row.dataset.cat === category;
-    
-    const cmdName = row.querySelector('td:nth-child(2)') ? row.querySelector('td:nth-child(2)').textContent.toLowerCase() : '';
-    const descText = row.querySelector('td:nth-child(3)') ? row.querySelector('td:nth-child(3)').textContent.toLowerCase() : '';
-    const exampleText = row.querySelector('td:nth-child(4)') ? row.querySelector('td:nth-child(4)').textContent.toLowerCase() : '';
-    
-    const searchMatch = !searchText || 
-      cmdName.includes(searchLower) || 
-      descText.includes(searchLower) || 
-      exampleText.includes(searchLower);
-    
-    const favMatch = !showFavoritesOnly || isFavorite(commandText);
-    
-    const isVisible = (categoryMatch && searchMatch && favMatch);
-    row.style.display = isVisible ? '' : 'none';
-    
-    if (isVisible) visibleCount++;
+function filterTable(searchTerm = '', category = null) {
+  const term = searchTerm.toLowerCase().trim();
+
+  const filtered = commandsData.filter(cmd => {
+    const matchesCategory = !category || cmd.category === category;
+    const matchesText = `${cmd.name || ''} ${cmd.description || ''} ${cmd.example || ''} ${cmd.tag || ''}`
+      .toLowerCase()
+      .includes(term);
+
+    return matchesCategory && matchesText;
   });
-  
-  const countBadge = document.getElementById('resultCount');
-  if (countBadge) {
-    countBadge.textContent = `${visibleCount} command${visibleCount !== 1 ? 's' : ''}`;
-  }
+
+  populateTable(filtered);
+  updateResultCount(filtered.length);
 }
 
 function toggleFavorite(command, buttonElement) {
