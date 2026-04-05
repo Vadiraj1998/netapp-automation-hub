@@ -554,6 +554,23 @@ code {
   transition: border-color 0.2s;
 }
 
+.cmd-filter-bar select {
+  min-width: 200px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.cmd-filter-bar select:focus {
+  border-color: var(--accent-cmd);
+}
+
 .cmd-filter-bar input:focus { border-color: var(--accent); }
 
 .filter-btn {
@@ -3605,3 +3622,4 @@ body.modal-open .sidebar-toggle {
   margin-top: 8px;
   font-family: var(--font-mono);
 }
+
