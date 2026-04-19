@@ -1,0 +1,65 @@
+<!-- Post Content -->
+<article class="post-content">
+
+      <img src="/assets/images/blog/20241215-snapmirror-failover.png" alt="Snapmirror Failover"/>
+
+      <p>SnapMirror failover is one of the most critical operations in a NetApp environment. Automating it correctly can save hours during a disaster recovery event.</p>
+
+      <h2>Prerequisites</h2>
+      <ul>
+        <li>ONTAP 9.8 or later</li>
+        <li>Python 3.8+</li>
+        <li><code>netapp-ontap</code> library installed</li>
+      </ul>
+
+      <h2>Getting Started</h2>
+      <p>First, install the required library:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">bash</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>pip install netapp-ontap</code></pre>
+      </div>
+
+      <h2>The Script</h2>
+      <p>Here's a full working example for automating SnapMirror failover:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">python</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>from netapp_ontap import HostConnection, NetAppRestError
+from netapp_ontap.resources import SnapmirrorRelationship
+
+def failover_snapmirror(cluster_ip, username, password, dest_vserver, dest_volume):
+    with HostConnection(cluster_ip, username=username, password=password, verify=False):
+        try:
+            rel = SnapmirrorRelationship.find(
+                destination={"path": f"{dest_vserver}:{dest_volume}"}
+            )
+            if rel:
+                rel.failover()
+                print(f"Failover initiated for {dest_vserver}:{dest_volume}")
+            else:
+                print("No SnapMirror relationship found.")
+        except NetAppRestError as e:
+            print(f"Error: {e}")
+
+# Usage
+failover_snapmirror("192.168.1.100", "admin", "password", "dest_svm", "dest_vol")</code></pre>
+      </div>
+
+      <h2>Best Practices</h2>
+      <ul>
+        <li>Always verify the relationship state before triggering failover</li>
+        <li>Log all operations with timestamps</li>
+        <li>Test in a non-production environment first</li>
+        <li>Set up monitoring alerts after failover completes</li>
+      </ul>
+
+      <h2>Conclusion</h2>
+      <p>Automating SnapMirror failover reduces human error and cuts recovery time significantly. The ONTAP Python client library makes this straightforward with proper error handling.</p>
+</article>

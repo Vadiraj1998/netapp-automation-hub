@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel · NetApp Hub</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'JetBrains Mono', monospace, sans-serif;
+      background: #0a0e1a;
+      color: #c9d1d9;
+      padding: 32px;
+      min-height: 100vh;
+    }
+    h1 { color: #3dc8a0; font-size: 24px; margin-bottom: 8px; }
+    .subtitle { color: #6e7681; font-size: 13px; margin-bottom: 32px; }
+
+    /* Login */
+    #loginBox {
+      max-width: 400px;
+      background: #161b2e;
+      border: 1px solid #2a3150;
+      border-radius: 12px;
+      padding: 32px;
+    }
+    #loginBox h2 { color: #e6edf3; margin-bottom: 20px; font-size: 16px; }
+    input[type="password"] {
+      width: 100%;
+      background: #0a0e1a;
+      border: 1px solid #2a3150;
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #e6edf3;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+    input[type="password"]:focus { border-color: #3dc8a0; }
+
+    /* Buttons */
+    button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-approve  { background: #3dc8a0; color: #0a0e1a; }
+    .btn-approve:hover { background: #2fa882; }
+    .btn-reject   { background: rgba(255,107,107,0.15); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.3); }
+    .btn-reject:hover  { background: rgba(255,107,107,0.25); }
+    .btn-delete   { background: rgba(255,107,107,0.15); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.3); }
+    .btn-delete:hover  { background: rgba(255,107,107,0.25); }
+    .btn-login    { background: #3dc8a0; color: #0a0e1a; width: 100%; }
+    #logoutBtn    { background: transparent; border: 1px solid #2a3150; color: #6e7681; margin-bottom: 24px; }
+
+    /* Admin panel */
+    #adminPanel { display: none; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; margin-bottom: 28px; border-bottom: 1px solid #2a3150; }
+    .tab {
+      padding: 10px 20px; cursor: pointer; font-size: 13px; font-weight: 600;
+      border: none; background: transparent; color: #6e7681;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: all 0.15s;
+    }
+    .tab.active { color: #3dc8a0; border-bottom-color: #3dc8a0; }
+    .tab-panel  { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Stats */
+    .stats-bar { display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+    .stat { background: #161b2e; border: 1px solid #2a3150; border-radius: 8px; padding: 12px 20px; font-size: 13px; }
+    .stat-num { font-size: 22px; font-weight: 700; color: #3dc8a0; }
+
+    /* Cards */
+    .card {
+      background: #161b2e;
+      border: 1px solid #2a3150;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .card.pending  { border-left: 3px solid #f5a623; }
+    .card.approved { border-left: 3px solid #3dc8a0; }
+    .card.rejected { border-left: 3px solid #ff6b6b; opacity: 0.6; }
+
+    .card-meta {
+      display: flex; gap: 12px; font-size: 12px; color: #6e7681;
+      margin-bottom: 8px; flex-wrap: wrap;
+    }
+    .card-meta strong { color: #3dc8a0; }
+    .card-meta .cat   { color: #7b61ff; }
+
+    .card-title  { font-size: 15px; font-weight: 700; color: #e6edf3; margin-bottom: 6px; }
+    .card-excerpt { font-size: 13px; color: #8b949e; margin-bottom: 10px; line-height: 1.5; }
+    .card-content {
+      font-size: 12px; color: #6e7681; background: #0a0e1a;
+      border: 1px solid #2a3150; border-radius: 6px; padding: 10px;
+      max-height: 120px; overflow-y: auto; margin-bottom: 12px;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .card-image { margin-bottom: 12px; }
+    .card-image img { max-height: 160px; border-radius: 6px; object-fit: cover; max-width: 100%; }
+    .card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* Comment cards */
+    .comment-card { background: #161b2e; border: 1px solid #2a3150; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+    .comment-card.pending  { border-left: 3px solid #f5a623; }
+    .comment-card.approved { border-left: 3px solid #3dc8a0; opacity: 0.6; }
+    .comment-meta { display: flex; gap: 12px; font-size: 12px; color: #6e7681; margin-bottom: 8px; flex-wrap: wrap; }
+    .comment-meta strong { color: #3dc8a0; }
+    .comment-meta .post-id { color: #7b61ff; }
+    .comment-text { font-size: 14px; line-height: 1.6; color: #c9d1d9; margin-bottom: 14px; }
+    .comment-actions { display: flex; gap: 8px; }
+
+    .section-title {
+      font-size: 16px; font-weight: 700; color: #e6edf3;
+      margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #2a3150;
+    }
+    .empty   { color: #6e7681; font-size: 13px; padding: 16px 0; }
+    .loading { color: #6e7681; font-size: 13px; }
+
+    /* Tags */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .tag { background: rgba(123,97,255,0.12); color: #7b61ff; border: 1px solid rgba(123,97,255,0.3); border-radius: 4px; padding: 2px 8px; font-size: 11px; }
+  </style>
+</head>
+<body>
+
+  <h1>🛡️ NetApp Hub Admin</h1>
+  <p class="subtitle">Submissions · Comments · Moderation</p>
+
+  <!-- Login -->
+  <div id="loginBox">
+    <h2>Enter Admin Password</h2>
+    <input type="password" id="adminPassword" placeholder="Password"
+      onkeydown="if(event.key==='Enter') login()"/>
+    <button class="btn-login" onclick="login()">Login</button>
+    <p id="loginError" style="color:#ff6b6b;font-size:12px;margin-top:8px;"></p>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel">
+    <button id="logoutBtn" onclick="logout()">← Logout</button>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('submissions', this)">📝 Submissions</button>
+      <button class="tab"        onclick="switchTab('comments', this)">💬 Comments</button>
+    </div>
+
+    <!-- ── Submissions Tab ── -->
+    <div class="tab-panel active" id="tab-submissions">
+      <div class="stats-bar">
+        <div class="stat"><div class="stat-num" id="subPending">-</div><div>Pending</div></div>
+        <div class="stat"><div class="stat-num" id="subApproved">-</div><div>Approved</div></div>
+        <div class="stat"><div class="stat-num" id="subRejected">-</div><div>Rejected</div></div>
+      </div>
+
+      <div class="section-title">⏳ Pending Submissions</div>
+      <div id="subPendingList"><p class="loading">Loading…</p></div>
+
+      <div class="section-title" style="margin-top:32px;">✅ Approved</div>
+      <div id="subApprovedList"><p class="loading">Loading…</p></div>
+
+      <div class="section-title" style="margin-top:32px;">❌ Rejected</div>
+      <div id="subRejectedList"><p class="loading">Loading…</p></div>
+    </div>
+
+    <!-- ── Comments Tab ── -->
+    <div class="tab-panel" id="tab-comments">
+      <div class="stats-bar">
+        <div class="stat"><div class="stat-num" id="statPending">-</div><div>Pending</div></div>
+        <div class="stat"><div class="stat-num" id="statApproved">-</div><div>Approved</div></div>
+        <div class="stat"><div class="stat-num" id="statTotal">-</div><div>Total</div></div>
+      </div>
+
+      <div class="section-title">⏳ Pending Approval</div>
+      <div id="pendingList"><p class="loading">Loading…</p></div>
+
+      <div class="section-title" style="margin-top:32px;">✅ Approved</div>
+      <div id="approvedList"><p class="loading">Loading…</p></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, collection, collectionGroup,
+      getDocs, doc, updateDoc, deleteDoc,
+      query, orderBy, where
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const FIREBASE_CONFIG = {
+      apiKey:            "AIzaSyAozsRXTtidH65UhWv2bqFk3J2fZ2iOtsw",
+      authDomain:        "netapp-hub.firebaseapp.com",
+      projectId:         "netapp-hub",
+      storageBucket:     "netapp-hub.firebasestorage.app",
+      messagingSenderId: "599153057916",
+      appId:             "1:599153057916:web:b9030d0a2d5d2563a1a9f9"
+    };
+
+    const ADMIN_PASSWORD = "";
+
+    const app = initializeApp(FIREBASE_CONFIG);
+    const db  = getFirestore(app);
+
+    // ── Auth ──────────────────────────────────────────────────
+    window.login = function () {
+      const pw = document.getElementById('adminPassword').value;
+      if (pw === ADMIN_PASSWORD) {
+        document.getElementById('loginBox').style.display   = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        loadSubmissions();
+        loadComments();
+      } else {
+        document.getElementById('loginError').textContent = 'Incorrect password.';
+      }
+    };
+
+    window.logout = function () {
+      document.getElementById('loginBox').style.display   = 'block';
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('adminPassword').value = '';
+    };
+
+    // ── Tabs ──────────────────────────────────────────────────
+    window.switchTab = function (name, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      document.getElementById(`tab-${name}`).classList.add('active');
+      btn.classList.add('active');
+    };
+
+    // ── Submissions ───────────────────────────────────────────
+    async function loadSubmissions() {
+      const snap = await getDocs(query(collection(db, 'submissions'), orderBy('createdAt', 'desc')));
+      const pending = [], approved = [], rejected = [];
+      snap.forEach(d => {
+        const s = { id: d.id, ref: d.ref, ...d.data() };
+        if (s.status === 'approved') approved.push(s);
+        else if (s.status === 'rejected') rejected.push(s);
+        else pending.push(s);
+      });
+
+      document.getElementById('subPending').textContent  = pending.length;
+      document.getElementById('subApproved').textContent = approved.length;
+      document.getElementById('subRejected').textContent = rejected.length;
+
+      renderSubmissions('subPendingList',  pending,  'pending');
+      renderSubmissions('subApprovedList', approved, 'approved');
+      renderSubmissions('subRejectedList', rejected, 'rejected');
+    }
+
+    function renderSubmissions(containerId, submissions, status) {
+      const el = document.getElementById(containerId);
+      if (!submissions.length) { el.innerHTML = '<p class="empty">None.</p>'; return; }
+
+      el.innerHTML = submissions.map(s => {
+        const date = s.createdAt?.toDate
+          ? s.createdAt.toDate().toLocaleString()
+          : 'Unknown';
+        const tags = s.tags
+          ? s.tags.split(',').map(t => `<span class="tag">${escHtml(t.trim())}</span>`).join('')
+          : '';
+
+        return `
+          <div class="card ${status}" id="sub-${s.id}">
+            <div class="card-meta">
+              <strong>${escHtml(s.author)}</strong>
+              <span class="cat">📂 ${escHtml(s.category)}</span>
+              <span>✉ ${escHtml(s.email)}</span>
+              <span>${date}</span>
+            </div>
+            <div class="card-title">${escHtml(s.title)}</div>
+            <div class="card-excerpt">${escHtml(s.excerpt)}</div>
+            ${s.imageUrl ? `<div class="card-image"><img src="${s.imageUrl}" alt="submission image"/></div>` : ''}
+            ${tags ? `<div class="tag-list">${tags}</div>` : ''}
+            <details style="margin-bottom:12px;">
+              <summary style="cursor:pointer;color:#6e7681;font-size:12px;margin-bottom:6px;">View full content</summary>
+              <div class="card-content">${escHtml(s.content)}</div>
+            </details>
+            <div class="card-actions">
+              ${status === 'pending' ? `
+                <button class="btn-approve" onclick="updateSubmission('${s.id}', 'approved')">✅ Approve</button>
+                <button class="btn-reject"  onclick="updateSubmission('${s.id}', 'rejected')">❌ Reject</button>
+              ` : ''}
+              ${status === 'rejected' ? `
+                <button class="btn-approve" onclick="updateSubmission('${s.id}', 'approved')">✅ Approve</button>
+              ` : ''}
+              ${status === 'approved' ? `
+                <button class="btn-reject" onclick="updateSubmission('${s.id}', 'rejected')">↩ Reject</button>
+              ` : ''}
+              <button class="btn-delete" onclick="deleteSubmission('${s.id}')">🗑 Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.updateSubmission = async function (id, status) {
+      await updateDoc(doc(db, 'submissions', id), { status });
+      loadSubmissions();
+    };
+
+    window.deleteSubmission = async function (id) {
+      if (!confirm('Delete this submission permanently?')) return;
+      await deleteDoc(doc(db, 'submissions', id));
+      loadSubmissions();
+    };
+
+    // ── Comments ──────────────────────────────────────────────
+    async function loadComments() {
+      const q    = query(collectionGroup(db, 'comments'), orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      const pending = [], approved = [];
+      snap.forEach(d => {
+        const data = { id: d.id, ref: d.ref, ...d.data() };
+        data.approved ? approved.push(data) : pending.push(data);
+      });
+
+      document.getElementById('statPending').textContent  = pending.length;
+      document.getElementById('statApproved').textContent = approved.length;
+      document.getElementById('statTotal').textContent    = snap.size;
+
+      renderComments('pendingList',  pending,  false);
+      renderComments('approvedList', approved, true);
+    }
+
+    function renderComments(containerId, comments, isApproved) {
+      const el = document.getElementById(containerId);
+      if (!comments.length) { el.innerHTML = '<p class="empty">None yet.</p>'; return; }
+
+      el.innerHTML = comments.map(c => {
+        const date = c.createdAt?.toDate
+          ? c.createdAt.toDate().toLocaleString()
+          : 'Unknown';
+        return `
+          <div class="comment-card ${isApproved ? 'approved' : 'pending'}" id="card-${c.id}">
+            <div class="comment-meta">
+              <strong>${escHtml(c.name)}</strong>
+              <span class="post-id">📄 ${c.postId || 'unknown'}</span>
+              <span>${date}</span>
+            </div>
+            <div class="comment-text">${escHtml(c.comment)}</div>
+            <div class="comment-actions">
+              ${!isApproved ? `<button class="btn-approve" onclick="approveComment('${c.id}', '${c.postId}')">✅ Approve</button>` : ''}
+              <button class="btn-delete" onclick="deleteComment('${c.id}', '${c.postId}')">🗑 Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.approveComment = async function (commentId, postId) {
+      await updateDoc(doc(db, 'posts', postId, 'comments', commentId), { approved: true });
+      loadComments();
+    };
+
+    window.deleteComment = async function (commentId, postId) {
+      if (!confirm('Delete this comment permanently?')) return;
+      await deleteDoc(doc(db, 'posts', postId, 'comments', commentId));
+      loadComments();
+    };
+
+    function escHtml(str = '') {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+  </script>
+</body>
+</html>
