@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { initializeApp, getApps } from 'firebase/app'
 import {
@@ -144,22 +144,26 @@ function VoteBar({ postId }) {
   const [dislikes, setDislikes] = useState(0)
   const [voted, setVoted]       = useState(null)
   const [toast, setToast]       = useState('')
-  
-  useEffect(() => {
+
+  const refreshCounts = useCallback(async () => {
     const postRef = doc(db, 'posts', postId)
-    getDoc(postRef).then(snap => {
-      if (snap.exists()) {
-        setLikes(snap.data().likes || 0)
-        setDislikes(snap.data().dislikes || 0)
-      }
-    }).catch(() => {})
+    const snap = await getDoc(postRef)
+    if (snap.exists()) {
+      setLikes(snap.data().likes || 0)
+      setDislikes(snap.data().dislikes || 0)
+    }
+  }, [postId])
+
+  useEffect(() => {
+    refreshCounts()
     const v = localStorage.getItem(`vote_${postId}`)
     if (v) setVoted(v)
-  }, [postId])
+  }, [postId, refreshCounts])
 
   const handleVote = async (type) => {
     if (voted === type) { setToast("You've already voted on this post."); return }
-    const update = { [type]: increment(1) }
+    const postRef = doc(db, 'posts', postId)
+    const update  = { [type]: increment(1) }
     if (voted) update[voted] = increment(-1)
     try {
       const snap = await getDoc(postRef)
@@ -168,11 +172,7 @@ function VoteBar({ postId }) {
         : await setDoc(postRef, { likes: 0, dislikes: 0, [type]: 1 })
       localStorage.setItem(`vote_${postId}`, type)
       setVoted(type)
-      const fresh = await getDoc(postRef)
-      if (fresh.exists()) {
-        setLikes(fresh.data().likes || 0)
-        setDislikes(fresh.data().dislikes || 0)
-      }
+      await refreshCounts()
       setToast(type === 'likes' ? '👍 Thanks for the like!' : '👎 Feedback noted.')
     } catch { setToast('Something went wrong. Try again.') }
   }
@@ -209,13 +209,11 @@ function CommentsSection({ postId }) {
   const [text, setText]             = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [toast, setToast]           = useState('')
-  const commentsRef = collection(db, 'posts', postId, 'comments')
 
-  useEffect(() => { loadComments() }, [postId])
-
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     setLoading(true)
     try {
+      const commentsRef = collection(db, 'posts', postId, 'comments')
       const q    = query(commentsRef, where('approved', '==', true), orderBy('createdAt', 'desc'))
       const snap = await getDocs(q)
       const list = []
@@ -229,7 +227,9 @@ function CommentsSection({ postId }) {
       setComments(list)
     } catch { setComments([]) }
     finally { setLoading(false) }
-  }
+  }, [postId])
+
+  useEffect(() => { loadComments() }, [loadComments])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -240,6 +240,7 @@ function CommentsSection({ postId }) {
     if (trimText.length < 10 || urlCount > 2) { setToast('Comment looks like spam.'); return }
     setSubmitting(true)
     try {
+      const commentsRef = collection(db, 'posts', postId, 'comments')
       await addDoc(commentsRef, {
         name: trimName, comment: trimText,
         approved: false, createdAt: serverTimestamp(), postId,
@@ -332,14 +333,12 @@ export default function BlogPost() {
       .catch(() => setStatus('error'))
   }, [slug])
 
-  // ── Loading
   if (status === 'loading') return (
     <main className="main-content">
       <p style={{ padding: 48, color: 'var(--text-dim)' }}>Loading…</p>
     </main>
   )
 
-  // ── Not found / error
   if (status === 'notfound' || status === 'error') return (
     <main className="main-content">
       <div style={{ marginTop: 48, textAlign: 'center' }}>
@@ -359,8 +358,6 @@ export default function BlogPost() {
 
   return (
     <main className="main-content">
-
-      {/* ── SEO — uses post metadata dynamically ── */}
       <SEO
         title={`${post.title} | NetApp Hub`}
         description={post.excerpt}
@@ -371,18 +368,13 @@ export default function BlogPost() {
         keywords={tags.join(', ')}
       />
 
-      {/* Back button */}
       <div style={{ marginBottom: 24 }}>
-        <button
-          onClick={() => navigate('/blog')}
-          className="post-back-btn"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-        >
+        <button onClick={() => navigate('/blog')} className="post-back-btn"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           ← Back to Blog
         </button>
       </div>
 
-      {/* Post header */}
       <header className="post-header">
         <div className="post-meta-top">
           {tags.map(tag => <span className="blog-tag" key={tag}>{tag}</span>)}
@@ -395,7 +387,6 @@ export default function BlogPost() {
         </div>
       </header>
 
-      {/* Featured image */}
       {post.image && (
         <div style={{ width: '100%', overflow: 'hidden', borderRadius: 8, marginBottom: 32, boxSizing: 'border-box' }}>
           <img
@@ -407,20 +398,13 @@ export default function BlogPost() {
         </div>
       )}
 
-      {/* Article body */}
       <PostArticle html={html} />
-
-      {/* Likes / dislikes */}
       <VoteBar postId={slug} />
-
-      {/* Comments */}
       <CommentsSection postId={slug} />
 
-      {/* Bottom nav */}
       <div style={{ marginTop: 48, paddingTop: 24, borderTop: '1px solid var(--border)' }}>
         <Link to="/blog" className="btn btn-secondary">← All Articles</Link>
       </div>
-
     </main>
   )
 }
